@@ -32,6 +32,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private boolean confirmed;
 
+    @OneToMany(mappedBy = "user")
+    private Set<AudioBook> audioBooks;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 

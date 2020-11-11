@@ -1,7 +1,8 @@
-package com.orion.anibelika.service;
+package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.entity.User;
 import com.orion.anibelika.repository.UserRepository;
+import com.orion.anibelika.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         User user = userRepository.findUserByEmail(email);
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("No user with email: " + email);
