@@ -7,7 +7,7 @@ public class DefaultAudioBookInfoDTO {
     private Long id;
     private String name;
     private String description;
-    private String photoURL;
+    private byte[] image;
     private Long tome;
     private Boolean createdByCurrentUser;
 }

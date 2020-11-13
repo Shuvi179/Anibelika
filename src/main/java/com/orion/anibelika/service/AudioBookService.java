@@ -6,4 +6,6 @@ import org.springframework.security.access.prepost.PostAuthorize;
 public interface AudioBookService {
     @PostAuthorize("returnObject != null")
     DefaultAudioBookInfoDTO getBookById(Long id);
+
+    void addAudioBook(DefaultAudioBookInfoDTO dto);
 }

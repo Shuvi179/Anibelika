@@ -23,7 +23,7 @@ public class AudioBook {
     private String description;
 
     @Column
-    private String photoURL;
+    private String imageURL;
 
     @Column
     private Integer tome;
