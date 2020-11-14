@@ -3,10 +3,9 @@ package com.orion.anibelika.controller;
 
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.service.AudioBookService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -21,7 +20,12 @@ public class AudioBookController {
     }
 
     @GetMapping(value = "/{id}")
-    public DefaultAudioBookInfoDTO getAudioBookById(@PathVariable Optional<Long> id) {
-        return audioBookService.getBookById(id.orElseThrow(() -> new IllegalArgumentException("Book id is null")));
+    public ResponseEntity<DefaultAudioBookInfoDTO> getAudioBookById(@PathVariable Optional<Long> id) {
+        return new ResponseEntity<>(audioBookService.getBookById(id.orElseThrow(() -> new IllegalArgumentException("Book id is null"))), HttpStatus.OK);
+    }
+
+    @PutMapping
+    public void addNewAudioBook(@RequestBody DefaultAudioBookInfoDTO dto) {
+        audioBookService.addAudioBook(dto);
     }
 }

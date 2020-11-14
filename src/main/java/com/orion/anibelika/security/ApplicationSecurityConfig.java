@@ -22,7 +22,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/css/*", "/js/*").permitAll()
                 .antMatchers(servletPath + "/user/*").authenticated()
-                .antMatchers(servletPath + "/book/*").authenticated()
+                //.antMatchers(servletPath + "/book/*").authenticated()
                 .anyRequest().permitAll()
                 .and()
                 .formLogin();

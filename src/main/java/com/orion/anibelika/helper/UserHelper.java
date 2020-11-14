@@ -1,6 +1,7 @@
 package com.orion.anibelika.helper;
 
 import com.orion.anibelika.entity.User;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class UserHelper {
@@ -23,6 +24,6 @@ public class UserHelper {
     }
 
     public static boolean isCurrentUserAuthenticated() {
-        return SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+        return !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken);
     }
 }

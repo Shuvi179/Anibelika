@@ -9,6 +9,8 @@ import com.orion.anibelika.service.AudioBookService;
 import lombok.NonNull;
 import org.springframework.stereotype.Service;
 
+import static com.orion.anibelika.helper.UserHelper.getCurrentUser;
+
 @Service
 public class AudioServiceImpl implements AudioBookService {
 
@@ -32,6 +34,7 @@ public class AudioServiceImpl implements AudioBookService {
     public void addAudioBook(DefaultAudioBookInfoDTO dto) {
         AudioBook book = mapper.map(dto);
         fileSystemImageProvider.saveImage(book.getImageURL(), dto.getImage());
+        book.setUser(getCurrentUser());
         audioBookRepository.save(book);
     }
 }

@@ -21,7 +21,7 @@ public class AudioBookURLProvider implements URLProvider {
     public String getURLById(Long authorId) {
         return applicationPropertyDataLoader.load(BOOK_IMAGE_ROOT_PROPERTY_KEY) +
                 authorId +
-                LocalDateTime.now().toString() +
+                LocalDateTime.now().withNano(0).toString().replace(":", "v") +
                 DEFAULT_IMAGE_FORMAT;
     }
 }
