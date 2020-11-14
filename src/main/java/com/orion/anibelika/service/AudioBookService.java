@@ -8,4 +8,6 @@ public interface AudioBookService {
     DefaultAudioBookInfoDTO getBookById(Long id);
 
     void addAudioBook(DefaultAudioBookInfoDTO dto);
+
+    void updateAudioBook(DefaultAudioBookInfoDTO dto);
 }
