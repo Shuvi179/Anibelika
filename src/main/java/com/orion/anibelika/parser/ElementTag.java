@@ -1,7 +1,7 @@
 package com.orion.anibelika.parser;
 
 public enum ElementTag {
-    IMG("img");
+    IMG("img"), H1("h1"), BR("br");
 
     private final String element;
 
