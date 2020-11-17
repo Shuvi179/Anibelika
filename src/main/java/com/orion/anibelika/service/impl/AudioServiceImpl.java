@@ -1,6 +1,7 @@
 package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
+import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.helper.Mapper;
@@ -9,11 +10,15 @@ import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.url.URLProvider;
 import lombok.NonNull;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.orion.anibelika.helper.UserHelper.getCurrentUserId;
 
@@ -64,6 +69,15 @@ public class AudioServiceImpl implements AudioBookService {
         newBook.setImageURL(currentBook.getImageURL());
         fileSystemImageProvider.saveImage(newBook.getImageURL(), dto.getImage());
         audioBookRepository.save(newBook);
+    }
+
+    @Override
+    public PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage) {
+        Pageable request = PageRequest.of(pageNumber, numberOfElementsByPage);
+        List<DefaultAudioBookInfoDTO> pageResult = audioBookRepository.findAll(request).get()
+                .map(mapper::map)
+                .collect(Collectors.toList());
+        return new PaginationAudioBookInfoDTO(pageResult);
     }
 
     private boolean validateInputData(DefaultAudioBookInfoDTO dto) {
