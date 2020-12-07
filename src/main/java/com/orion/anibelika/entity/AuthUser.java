@@ -14,26 +14,25 @@ import java.util.Set;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "users")
-public class User implements UserDetails {
+@Table(name = "auth_user")
+@Inheritance(strategy = InheritanceType.JOINED)
+public class AuthUser implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String nickName;
+    @Column(name = "identification_name", nullable = false, length = 64)
+    private String identificationName;
 
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @Column(nullable = false)
-    private String password;
+    @Column(name = "type", nullable = false)
+    private String type;
 
     @Column(nullable = false)
     private boolean confirmed;
 
-    @OneToMany(mappedBy = "user")
-    private Set<AudioBook> audioBooks;
+    @OneToOne(orphanRemoval = true)
+    @JoinColumn
+    private DataUser user;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
@@ -45,12 +44,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return type;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return identificationName;
     }
 
     @Override

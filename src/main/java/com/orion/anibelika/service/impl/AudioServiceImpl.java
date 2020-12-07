@@ -4,7 +4,8 @@ import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.exception.PermissionException;
-import com.orion.anibelika.helper.Mapper;
+import com.orion.anibelika.helper.UserHelper;
+import com.orion.anibelika.helper.impl.Mapper;
 import com.orion.anibelika.image.FileSystemImageProvider;
 import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.service.AudioBookService;
@@ -12,15 +13,12 @@ import com.orion.anibelika.url.URLProvider;
 import lombok.NonNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
-import static com.orion.anibelika.helper.UserHelper.getCurrentUserId;
 
 @Service
 public class AudioServiceImpl implements AudioBookService {
@@ -29,13 +27,16 @@ public class AudioServiceImpl implements AudioBookService {
     private final Mapper mapper;
     private final FileSystemImageProvider fileSystemImageProvider;
     private final URLProvider urlProvider;
+    private final UserHelper userHelper;
 
     public AudioServiceImpl(AudioBookRepository audioBookRepository, Mapper mapper,
-                            FileSystemImageProvider fileSystemImageProvider, URLProvider urlProvider) {
+                            FileSystemImageProvider fileSystemImageProvider, URLProvider urlProvider,
+                            UserHelper userHelper) {
         this.audioBookRepository = audioBookRepository;
         this.mapper = mapper;
         this.fileSystemImageProvider = fileSystemImageProvider;
         this.urlProvider = urlProvider;
+        this.userHelper = userHelper;
     }
 
     @Override
@@ -44,25 +45,25 @@ public class AudioServiceImpl implements AudioBookService {
     }
 
     @Override
-    @PreAuthorize("#dto.id == null")
+    @Transactional
     public void addAudioBook(DefaultAudioBookInfoDTO dto) {
-        if (!validateInputData(dto)) {
-            throw new IllegalArgumentException("Incorrect input data");
+        if (Objects.nonNull(dto.getId())) {
+            throw new IllegalArgumentException("book id must be null");
         }
         AudioBook book = mapper.map(dto);
-        book.setImageURL(urlProvider.getURLById(getCurrentUserId()));
+        book.setImageURL(urlProvider.getURLById(book.getUser().getId()));
         fileSystemImageProvider.saveImage(book.getImageURL(), dto.getImage());
         audioBookRepository.save(book);
     }
 
     @Override
-    @PreAuthorize("#dto.id != null && dto.id > 0")
+    @Transactional
     public void updateAudioBook(DefaultAudioBookInfoDTO dto) {
-        if (!validateInputData(dto)) {
-            throw new IllegalArgumentException("Incorrect input data");
+        if (Objects.isNull(dto.getId()) || dto.getId() <= 0) {
+            throw new IllegalArgumentException("book id is incorrect: " + dto.getId());
         }
         AudioBook currentBook = audioBookRepository.getOne(dto.getId());
-        if (!currentBook.getUser().getId().equals(getCurrentUserId())) {
+        if (!currentBook.getUser().getId().equals(userHelper.getCurrentDataUser().getId())) {
             throw new PermissionException("You don't have permission to access this data");
         }
         AudioBook newBook = mapper.map(dto);
@@ -74,15 +75,7 @@ public class AudioServiceImpl implements AudioBookService {
     @Override
     public PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage) {
         Pageable request = PageRequest.of(pageNumber, numberOfElementsByPage);
-        List<DefaultAudioBookInfoDTO> pageResult = audioBookRepository.findAll(request).get()
-                .map(mapper::map)
-                .collect(Collectors.toList());
-        return new PaginationAudioBookInfoDTO(pageResult);
-    }
-
-    private boolean validateInputData(DefaultAudioBookInfoDTO dto) {
-        return !StringUtils.isEmpty(dto.getName()) && !StringUtils.isEmpty(dto.getDescription())
-                && Objects.nonNull(dto.getTome()) && dto.getTome() > 0
-                && Objects.nonNull(dto.getImage()) && dto.getImage().length != 0;
+        List<AudioBook> result = audioBookRepository.findAll(request).getContent();
+        return new PaginationAudioBookInfoDTO(mapper.mapAll(result));
     }
 }

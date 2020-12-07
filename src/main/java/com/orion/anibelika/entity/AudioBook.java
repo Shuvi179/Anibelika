@@ -19,7 +19,7 @@ public class AudioBook {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
 
     @Column
@@ -30,5 +30,5 @@ public class AudioBook {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private DataUser user;
 }
