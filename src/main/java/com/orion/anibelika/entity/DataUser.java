@@ -17,8 +17,14 @@ public class DataUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "nick_name", nullable = false)
+    @Column(name = "nick_name", unique = true)
     private String nickName;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "email", unique = true)
+    private String email;
 
     @OneToMany(mappedBy = "user")
     private Set<AudioBook> audioBooks;

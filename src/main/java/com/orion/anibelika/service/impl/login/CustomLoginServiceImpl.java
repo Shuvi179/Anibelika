@@ -13,19 +13,18 @@ import javax.transaction.Transactional;
 import java.util.Map;
 import java.util.Objects;
 
-@Service
-public class FacebookCustomLoginService implements CustomLoginService {
+import static com.orion.anibelika.service.impl.login.AttributeProvider.*;
 
-    private static final String ID = "id";
-    private static final String NAME = "name";
+@Service
+public class CustomLoginServiceImpl implements CustomLoginService {
 
     private final UserRepository<AuthUser> userRepository;
     private final DataUserRepository dataUserRepository;
     private final PasswordConfig passwordConfig;
     private final CustomAuthenticationProvider customAuthenticationProvider;
 
-    public FacebookCustomLoginService(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository,
-                                      PasswordConfig passwordConfig, CustomAuthenticationProvider customAuthenticationProvider) {
+    public CustomLoginServiceImpl(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository,
+                                  PasswordConfig passwordConfig, CustomAuthenticationProvider customAuthenticationProvider) {
         this.userRepository = userRepository;
         this.dataUserRepository = dataUserRepository;
         this.passwordConfig = passwordConfig;
@@ -34,26 +33,26 @@ public class FacebookCustomLoginService implements CustomLoginService {
 
     @Override
     @Transactional
-    public void login(Map<String, Object> attributes) {
-        String socialId = (String) attributes.get(ID);
+    public void login(Map<String, Object> attributes, String clientID) {
+        Map<String, String> params = getAttribute(clientID);
+        String socialId = (String) attributes.get(params.get(SOCIAL_ID));
         AuthUser currentUser = userRepository.findUserByIdentificationName(socialId);
         if (Objects.isNull(currentUser)) {
-            currentUser = registerUser(attributes);
-            currentUser = userRepository.save(currentUser);
+            currentUser = registerUser(attributes, params);
         }
         customAuthenticationProvider.trust(currentUser);
     }
 
-    private AuthUser registerUser(Map<String, Object> attributes) {
+    private AuthUser registerUser(Map<String, Object> attributes, Map<String, String> param) {
         DataUser dataUser = new DataUser();
-        dataUser.setNickName((String) attributes.get(NAME));
+        dataUser.setFullName((String) attributes.get(param.get(NAME)));
         dataUser = dataUserRepository.save(dataUser);
 
-        AuthUser facebookUser = new AuthUser();
-        facebookUser.setIdentificationName((String) attributes.get(ID));
-        facebookUser.setType(passwordConfig.passwordEncoder().encode(LoginClientId.FACEBOOK.getClientId()));
-        facebookUser.setConfirmed(true);
-        facebookUser.setUser(dataUser);
-        return facebookUser;
+        AuthUser authUser = new AuthUser();
+        authUser.setIdentificationName((String) attributes.get(param.get(SOCIAL_ID)));
+        authUser.setType(passwordConfig.passwordEncoder().encode(param.get(PASSWORD)));
+        authUser.setConfirmed(true);
+        authUser.setUser(dataUser);
+        return userRepository.save(authUser);
     }
 }

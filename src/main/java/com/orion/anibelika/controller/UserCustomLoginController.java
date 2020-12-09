@@ -1,6 +1,6 @@
 package com.orion.anibelika.controller;
 
-import com.orion.anibelika.service.impl.login.CustomLoginServiceFactory;
+import com.orion.anibelika.service.CustomLoginService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,15 +11,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/oauth2Login")
 public class UserCustomLoginController {
 
-    private final CustomLoginServiceFactory loginServiceFactory;
+    private final CustomLoginService loginService;
 
-    public UserCustomLoginController(CustomLoginServiceFactory loginServiceFactory) {
-        this.loginServiceFactory = loginServiceFactory;
+    public UserCustomLoginController(CustomLoginService loginService) {
+        this.loginService = loginService;
     }
 
     @GetMapping
     public void getOauth2LoginInfo(@AuthenticationPrincipal OAuth2AuthenticationToken oAuth2AuthenticationToken) {
-        loginServiceFactory.getLoginService(oAuth2AuthenticationToken.getAuthorizedClientRegistrationId())
-                .login(oAuth2AuthenticationToken.getPrincipal().getAttributes());
+        loginService.login(oAuth2AuthenticationToken.getPrincipal().getAttributes(), oAuth2AuthenticationToken.getAuthorizedClientRegistrationId());
     }
 }
