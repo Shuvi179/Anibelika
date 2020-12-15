@@ -11,6 +11,7 @@ public class PasswordMatchesValidator
 
     @Override
     public void initialize(PasswordMatches constraintAnnotation) {
+        // No need to do something.
     }
 
     @Override
