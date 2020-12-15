@@ -30,9 +30,12 @@ public class AuthUser implements UserDetails {
     @Column(nullable = false)
     private boolean confirmed;
 
-    @OneToOne(orphanRemoval = true)
-    @JoinColumn
+    @OneToOne(orphanRemoval = true, fetch = FetchType.LAZY)
+    @JoinColumn()
     private DataUser user;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private EmailConfirmation emailConfirmation;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;

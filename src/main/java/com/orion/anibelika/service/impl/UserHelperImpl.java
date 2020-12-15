@@ -1,9 +1,9 @@
-package com.orion.anibelika.helper.impl;
+package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
-import com.orion.anibelika.helper.UserHelper;
-import com.orion.anibelika.repository.DataUserRepository;
+import com.orion.anibelika.service.UserHelper;
+import com.orion.anibelika.service.UserService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserHelperImpl implements UserHelper {
 
-    private final DataUserRepository dataUserRepository;
+    private final UserService userService;
 
-    public UserHelperImpl(DataUserRepository dataUserRepository) {
-        this.dataUserRepository = dataUserRepository;
+    public UserHelperImpl(UserService userService) {
+        this.userService = userService;
     }
 
     private AuthUser getCurrentUser() {
@@ -29,6 +29,6 @@ public class UserHelperImpl implements UserHelper {
     @Override
     public DataUser getCurrentDataUser() {
         AuthUser currentUser = getCurrentUser();
-        return dataUserRepository.getDataUserByAuthUser(currentUser);
+        return userService.getDataUser(currentUser);
     }
 }

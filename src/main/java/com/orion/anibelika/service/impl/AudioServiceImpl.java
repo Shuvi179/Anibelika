@@ -4,11 +4,11 @@ import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.exception.PermissionException;
-import com.orion.anibelika.helper.UserHelper;
-import com.orion.anibelika.helper.impl.Mapper;
 import com.orion.anibelika.image.FileSystemImageProvider;
+import com.orion.anibelika.mapper.BookMapper;
 import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.service.AudioBookService;
+import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.url.URLProvider;
 import lombok.NonNull;
 import org.springframework.data.domain.PageRequest;
@@ -24,12 +24,12 @@ import java.util.Objects;
 public class AudioServiceImpl implements AudioBookService {
 
     private final AudioBookRepository audioBookRepository;
-    private final Mapper mapper;
+    private final BookMapper mapper;
     private final FileSystemImageProvider fileSystemImageProvider;
     private final URLProvider urlProvider;
     private final UserHelper userHelper;
 
-    public AudioServiceImpl(AudioBookRepository audioBookRepository, Mapper mapper,
+    public AudioServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
                             FileSystemImageProvider fileSystemImageProvider, URLProvider urlProvider,
                             UserHelper userHelper) {
         this.audioBookRepository = audioBookRepository;
@@ -73,6 +73,7 @@ public class AudioServiceImpl implements AudioBookService {
     }
 
     @Override
+    @Transactional
     public PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage) {
         Pageable request = PageRequest.of(pageNumber, numberOfElementsByPage);
         List<AudioBook> result = audioBookRepository.findAll(request).getContent();
