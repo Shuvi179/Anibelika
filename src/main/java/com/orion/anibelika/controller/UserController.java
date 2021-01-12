@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/api/v1/user")
 public class UserController {
     private final RegistrationService registrationService;
     private final UserService userService;
@@ -24,6 +24,16 @@ public class UserController {
     @PostMapping
     public ResponseEntity<UserDataDTO> addNewUser(@RequestBody @Valid RegisterUserDTO registerUserDTO) {
         return new ResponseEntity<>(registrationService.registerUser(registerUserDTO), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<UserDataDTO> getUser(@PathVariable Long id) {
+        return new ResponseEntity<>(userService.getUserDataById(id), HttpStatus.OK);
+    }
+
+    @PutMapping
+    public void updateUser(@RequestBody @Valid UserDataDTO userDataDTO) {
+        userService.updateUser(userDataDTO);
     }
 
     @GetMapping(value = "/confirm")

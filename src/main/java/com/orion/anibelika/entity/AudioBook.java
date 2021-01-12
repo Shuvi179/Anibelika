@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -27,6 +28,9 @@ public class AudioBook {
 
     @Column
     private Integer tome;
+
+    @OneToMany(mappedBy = "book")
+    private Set<BaseAudio> audios;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

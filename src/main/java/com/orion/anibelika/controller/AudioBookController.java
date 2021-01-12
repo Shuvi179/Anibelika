@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RestController
 @Validated
-@RequestMapping(value = "/book")
+@RequestMapping(value = "/api/v1/book")
 public class AudioBookController {
 
     private final AudioBookService audioBookService;

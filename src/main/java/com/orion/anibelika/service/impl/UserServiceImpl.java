@@ -1,10 +1,12 @@
 package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.RegisterUserDTO;
+import com.orion.anibelika.dto.UserDataDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.social.SimpleUser;
 import com.orion.anibelika.exception.RegistrationException;
+import com.orion.anibelika.mapper.UserMapper;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.repository.UserRepository;
 import com.orion.anibelika.security.PasswordConfig;
@@ -13,9 +15,11 @@ import com.orion.anibelika.service.impl.login.LoginClientId;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.transaction.Transactional;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -23,11 +27,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository<AuthUser> userRepository;
     private final DataUserRepository dataUserRepository;
     private final PasswordConfig passwordConfig;
+    private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository, PasswordConfig passwordConfig) {
+    public UserServiceImpl(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository, PasswordConfig passwordConfig,
+                           UserMapper userMapper) {
         this.userRepository = userRepository;
         this.dataUserRepository = dataUserRepository;
         this.passwordConfig = passwordConfig;
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -36,7 +43,6 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("No user with email: " + identification);
         }
-
         return user;
     }
 
@@ -67,13 +73,70 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDataDTO getUserDataById(Long id) {
+        DataUser user = validateDataUserId(id);
+        return userMapper.map(user);
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(UserDataDTO userDataDTO) {
+        DataUser user = validateUserDataDto(userDataDTO);
+        dataUserRepository.save(user);
+    }
+
+    private DataUser validateUserDataDto(UserDataDTO userDataDTO) {
+        if (Objects.isNull(userDataDTO.getId()) || userDataDTO.getId() <= 0) {
+            throw new IllegalArgumentException("User id is invalid: " + userDataDTO.getId());
+        }
+        Optional<DataUser> user = dataUserRepository.findById(userDataDTO.getId());
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("No DataUser with id: " + userDataDTO.getId());
+        }
+        if (!userDataDTO.getEmail().equals(user.get().getEmail())) {
+            if (dataUserRepository.existsDataUserByEmail(userDataDTO.getEmail())) {
+                throw new IllegalArgumentException("Email is already in use: " + userDataDTO.getEmail());
+            }
+        }
+        if (!userDataDTO.getNickName().equals(user.get().getNickName())) {
+            if (dataUserRepository.existsDataUserByNickName(userDataDTO.getNickName())) {
+                throw new IllegalArgumentException("NickName is already in use: " + userDataDTO.getNickName());
+            }
+        }
+        user.get().setEmail(userDataDTO.getEmail());
+        user.get().setNickName(userDataDTO.getNickName());
+        user.get().setFullName(userDataDTO.getFullName());
+        user.get().getAuthUser().setIdentificationName(userDataDTO.getEmail());
+        return user.get();
+    }
+
+    private DataUser validateDataUserId(Long id) {
+        if (Objects.isNull(id) || id <= 0) {
+            throw new IllegalArgumentException("DataUser id is incorrect: " + id);
+        }
+        Optional<DataUser> user = dataUserRepository.findById(id);
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("No DataUser with id: " + id);
+        }
+        return user.get();
+    }
+
+    @Override
     @Transactional
     public void confirmUser(String uuid) {
+        AuthUser user = validateUuid(uuid);
+        user.setConfirmed(true);
+        userRepository.save(user);
+    }
+
+    private AuthUser validateUuid(String uuid) {
+        if (StringUtils.isEmpty(uuid)) {
+            throw new IllegalArgumentException("Uuid can not be empty");
+        }
         AuthUser user = userRepository.findUserByEmailConfirmationUuid(uuid);
         if (Objects.isNull(user)) {
             throw new RegistrationException("Confirmation Uuid is invalid: " + uuid);
         }
-        user.setConfirmed(true);
-        userRepository.save(user);
+        return user;
     }
 }

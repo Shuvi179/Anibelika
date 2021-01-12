@@ -57,6 +57,7 @@ public class AdminAccountLoader implements ApplicationRunner {
         if (Objects.isNull(admin)) {
             DataUser dataUser = new DataUser();
             dataUser.setNickName(nickName);
+            dataUser.setEmail(email);
             dataUser = dataUserRepository.save(dataUser);
 
             admin = new SimpleUser();
@@ -70,6 +71,7 @@ public class AdminAccountLoader implements ApplicationRunner {
             admin.setIdentificationName(email);
             admin.getUser().setNickName(nickName);
             admin.setPassword(passwordConfig.passwordEncoder().encode(password));
+            admin.getUser().setEmail(email);
         }
         userRepository.save(admin);
     }

@@ -8,4 +8,8 @@ public interface DataUserRepository extends JpaRepository<DataUser, Long> {
     DataUser getDataUserByAuthUser(AuthUser user);
 
     boolean existsDataUserByEmailOrNickName(String email, String nickName);
+
+    boolean existsDataUserByEmail(String email);
+
+    boolean existsDataUserByNickName(String nickName);
 }
