@@ -1,8 +1,8 @@
 package com.orion.anibelika.service;
 
 import com.orion.anibelika.dto.RegisterUserDTO;
-import com.orion.anibelika.dto.UserDataDTO;
+import com.orion.anibelika.dto.UserDTO;
 
 public interface RegistrationService {
-    UserDataDTO registerUser(RegisterUserDTO dto);
+    UserDTO registerUser(RegisterUserDTO dto);
 }

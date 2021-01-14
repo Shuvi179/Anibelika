@@ -1,6 +1,6 @@
 package com.orion.anibelika.mapper;
 
-import com.orion.anibelika.dto.UserDataDTO;
+import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.DataUser;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,8 @@ public class UserMapper {
 
     private ModelMapper modelMapper = new ModelMapper();
 
-    public UserDataDTO map(DataUser user) {
-        return modelMapper.map(user, UserDataDTO.class);
+    public UserDTO map(DataUser user) {
+        return modelMapper.map(user, UserDTO.class);
     }
 
 }

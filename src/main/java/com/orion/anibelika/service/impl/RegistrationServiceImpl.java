@@ -1,7 +1,7 @@
 package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.RegisterUserDTO;
-import com.orion.anibelika.dto.UserDataDTO;
+import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.EmailConfirmation;
 import com.orion.anibelika.mapper.UserMapper;
@@ -40,7 +40,7 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional
-    public UserDataDTO registerUser(RegisterUserDTO dto) {
+    public UserDTO registerUser(RegisterUserDTO dto) {
         AuthUser newUser = userService.addUser(dto);
         sendRegisterMessage(newUser, dto.getEmail());
         return userMapper.map(userService.getDataUser(newUser));

@@ -6,4 +6,6 @@ public interface UserHelper {
     boolean isCurrentUserAuthenticated();
 
     DataUser getCurrentDataUser();
+
+    boolean authenticatedWithId(Long id);
 }

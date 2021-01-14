@@ -1,6 +1,5 @@
-package com.orion.anibelika.entity.social;
+package com.orion.anibelika.entity;
 
-import com.orion.anibelika.entity.AuthUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

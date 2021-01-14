@@ -2,7 +2,7 @@ package com.orion.anibelika.initialization;
 
 import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.Role;
-import com.orion.anibelika.entity.social.SimpleUser;
+import com.orion.anibelika.entity.SimpleUser;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.repository.RoleRepository;
 import com.orion.anibelika.repository.UserRepository;

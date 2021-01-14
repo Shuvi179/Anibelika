@@ -1,15 +1,17 @@
 package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.RegisterUserDTO;
-import com.orion.anibelika.dto.UserDataDTO;
+import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
-import com.orion.anibelika.entity.social.SimpleUser;
+import com.orion.anibelika.entity.SimpleUser;
+import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.exception.RegistrationException;
 import com.orion.anibelika.mapper.UserMapper;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.repository.UserRepository;
 import com.orion.anibelika.security.PasswordConfig;
+import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.service.UserService;
 import com.orion.anibelika.service.impl.login.LoginClientId;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,13 +30,15 @@ public class UserServiceImpl implements UserService {
     private final DataUserRepository dataUserRepository;
     private final PasswordConfig passwordConfig;
     private final UserMapper userMapper;
+    private final UserHelper userHelper;
 
     public UserServiceImpl(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository, PasswordConfig passwordConfig,
-                           UserMapper userMapper) {
+                           UserMapper userMapper, UserHelper userHelper) {
         this.userRepository = userRepository;
         this.dataUserRepository = dataUserRepository;
         this.passwordConfig = passwordConfig;
         this.userMapper = userMapper;
+        this.userHelper = userHelper;
     }
 
     @Override
@@ -49,10 +53,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public AuthUser addUser(RegisterUserDTO registerUserDTO) {
-        boolean emailExist = dataUserRepository.existsDataUserByEmailOrNickName(registerUserDTO.getEmail(), registerUserDTO.getNickName());
-        if (emailExist) {
-            throw new RegistrationException("There is an account with that email address: " + registerUserDTO.getEmail());
-        }
+        validateEmail(registerUserDTO.getEmail());
+        validateNickName(registerUserDTO.getNickName());
+
         DataUser dataUser = new DataUser();
         dataUser.setNickName(registerUserDTO.getNickName());
         dataUser.setEmail(registerUserDTO.getEmail());
@@ -73,41 +76,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDataDTO getUserDataById(Long id) {
+    public UserDTO getUserDataById(Long id) {
         DataUser user = validateDataUserId(id);
         return userMapper.map(user);
     }
 
     @Override
     @Transactional
-    public void updateUser(UserDataDTO userDataDTO) {
-        DataUser user = validateUserDataDto(userDataDTO);
+    public void updateUser(UserDTO dto) {
+        DataUser user = validateUserDTO(dto);
+        user.setEmail(dto.getEmail());
+        user.setNickName(dto.getNickName());
+        user.setFullName(dto.getFullName());
+        user.getAuthUser().setIdentificationName(dto.getEmail());
         dataUserRepository.save(user);
     }
 
-    private DataUser validateUserDataDto(UserDataDTO userDataDTO) {
-        if (Objects.isNull(userDataDTO.getId()) || userDataDTO.getId() <= 0) {
-            throw new IllegalArgumentException("User id is invalid: " + userDataDTO.getId());
-        }
-        Optional<DataUser> user = dataUserRepository.findById(userDataDTO.getId());
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("No DataUser with id: " + userDataDTO.getId());
-        }
-        if (!userDataDTO.getEmail().equals(user.get().getEmail())) {
-            if (dataUserRepository.existsDataUserByEmail(userDataDTO.getEmail())) {
-                throw new IllegalArgumentException("Email is already in use: " + userDataDTO.getEmail());
-            }
-        }
-        if (!userDataDTO.getNickName().equals(user.get().getNickName())) {
-            if (dataUserRepository.existsDataUserByNickName(userDataDTO.getNickName())) {
-                throw new IllegalArgumentException("NickName is already in use: " + userDataDTO.getNickName());
-            }
-        }
-        user.get().setEmail(userDataDTO.getEmail());
-        user.get().setNickName(userDataDTO.getNickName());
-        user.get().setFullName(userDataDTO.getFullName());
-        user.get().getAuthUser().setIdentificationName(userDataDTO.getEmail());
-        return user.get();
+    private DataUser validateUserDTO(UserDTO dto) {
+        DataUser user = validateDataUserId(dto.getId());
+        validateNickNameAndEmailUpdate(dto, user);
+        return user;
     }
 
     private DataUser validateDataUserId(Long id) {
@@ -118,7 +106,31 @@ public class UserServiceImpl implements UserService {
         if (user.isEmpty()) {
             throw new IllegalArgumentException("No DataUser with id: " + id);
         }
+        if (!userHelper.authenticatedWithId(id)) {
+            throw new PermissionException("Don't have an access for this data");
+        }
         return user.get();
+    }
+
+    private void validateNickNameAndEmailUpdate(UserDTO dto, DataUser user) {
+        if (!dto.getEmail().equalsIgnoreCase(user.getEmail())) {
+            validateEmail(dto.getEmail());
+        }
+        if (!dto.getNickName().equalsIgnoreCase(user.getNickName())) {
+            validateNickName(dto.getNickName());
+        }
+    }
+
+    private void validateEmail(String email) {
+        if (dataUserRepository.existsDataUserByEmailIgnoreCase(email)) {
+            throw new IllegalArgumentException("Email is already in use: " + email);
+        }
+    }
+
+    private void validateNickName(String nickName) {
+        if (dataUserRepository.existsDataUserByNickNameIgnoreCase(nickName)) {
+            throw new IllegalArgumentException("NickName is already in use: " + nickName);
+        }
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.orion.anibelika.service;
 
 import com.orion.anibelika.dto.RegisterUserDTO;
-import com.orion.anibelika.dto.UserDataDTO;
+import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,9 +11,9 @@ public interface UserService extends UserDetailsService {
 
     DataUser getDataUser(AuthUser user);
 
-    UserDataDTO getUserDataById(Long id);
+    UserDTO getUserDataById(Long id);
 
-    void updateUser(UserDataDTO userDataDTO);
+    void updateUser(UserDTO dto);
 
     void confirmUser(String uuid);
 }
