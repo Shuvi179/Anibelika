@@ -2,9 +2,9 @@ package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
+import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.security.ApplicationSecurityRole;
 import com.orion.anibelika.service.UserHelper;
-import com.orion.anibelika.service.UserService;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -14,10 +14,10 @@ import static com.orion.anibelika.security.ApplicationSecurityRole.ROLE_ADMIN;
 @Service
 public class UserHelperImpl implements UserHelper {
 
-    private final UserService userService;
+    private final DataUserRepository dataUserRepository;
 
-    public UserHelperImpl(UserService userService) {
-        this.userService = userService;
+    public UserHelperImpl(DataUserRepository dataUserRepository) {
+        this.dataUserRepository = dataUserRepository;
     }
 
     private AuthUser getCurrentUser() {
@@ -32,7 +32,7 @@ public class UserHelperImpl implements UserHelper {
     @Override
     public DataUser getCurrentDataUser() {
         AuthUser currentUser = getCurrentUser();
-        return userService.getDataUser(currentUser);
+        return dataUserRepository.getDataUserByAuthUser(currentUser);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class UserHelperImpl implements UserHelper {
         if (currentUser.getRoles().contains(ApplicationSecurityRole.getRole(ROLE_ADMIN))) {
             return true;
         }
-        DataUser currentDataUser = userService.getDataUser(currentUser);
+        DataUser currentDataUser = dataUserRepository.getDataUserByAuthUser(currentUser);
         return currentDataUser.getId().equals(id);
     }
 }

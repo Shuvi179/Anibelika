@@ -1,7 +1,7 @@
 package com.orion.anibelika.parser;
 
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
-import com.orion.anibelika.image.WebImageProvider;
+import com.orion.anibelika.image.web.WebImageProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

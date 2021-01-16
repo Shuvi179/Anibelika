@@ -1,4 +1,4 @@
-package com.orion.anibelika.image;
+package com.orion.anibelika.image.fs;
 
 
 import org.springframework.stereotype.Component;
@@ -14,30 +14,23 @@ import java.util.Objects;
 public class DefaultFileSystemImageProvider implements FileSystemImageProvider {
 
     @Override
-    public boolean saveImage(String path, byte[] photo) {
+    public void saveImage(String path, byte[] photo) {
         if (StringUtils.isEmpty(path) || Objects.isNull(photo) || photo.length == 0) {
-            return false;
+            return;
         }
 
         File file = new File(path);
-        boolean result = true;
-        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            if (file.exists()) {
-                result = file.delete();
-            }
-            result &= file.createNewFile();
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file, false)) {
             fileOutputStream.write(photo);
-            return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return false;
     }
 
     @Override
     public byte[] getImage(String path) {
         if (StringUtils.isEmpty(path)) {
-            return new byte[0];
+            return EMPTY_RESULT;
         }
 
         try (FileInputStream in = new FileInputStream(new File(path))) {
@@ -45,6 +38,6 @@ public class DefaultFileSystemImageProvider implements FileSystemImageProvider {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new byte[0];
+        return EMPTY_RESULT;
     }
 }

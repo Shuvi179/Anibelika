@@ -14,4 +14,8 @@ public interface AudioBookService {
     void updateAudioBook(DefaultAudioBookInfoDTO dto);
 
     PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage);
+
+    void saveBookImage(Long id, byte[] image);
+
+    byte[] getBookImage(Long id);
 }

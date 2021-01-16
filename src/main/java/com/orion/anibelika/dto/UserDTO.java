@@ -18,6 +18,7 @@ public class UserDTO {
     @NotNull
     private String nickName;
     private String fullName;
+    private String imageURL;
 
     @ValidEmail
     private String email;

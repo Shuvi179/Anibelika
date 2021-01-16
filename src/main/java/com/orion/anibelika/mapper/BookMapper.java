@@ -3,7 +3,6 @@ package com.orion.anibelika.mapper;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.DataUser;
-import com.orion.anibelika.image.FileSystemImageProvider;
 import com.orion.anibelika.service.UserHelper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -17,11 +16,9 @@ import java.util.stream.Collectors;
 public class BookMapper {
 
     private ModelMapper modelMapper = new ModelMapper();
-    private final FileSystemImageProvider fileSystemImageProvider;
     private final UserHelper userHelper;
 
-    public BookMapper(FileSystemImageProvider fileSystemImageProvider, UserHelper userHelper) {
-        this.fileSystemImageProvider = fileSystemImageProvider;
+    public BookMapper(UserHelper userHelper) {
         this.userHelper = userHelper;
     }
 
@@ -44,7 +41,6 @@ public class BookMapper {
 
     private DefaultAudioBookInfoDTO getDefaultDto(AudioBook audioBook, Predicate<AudioBook> createdByUser) {
         DefaultAudioBookInfoDTO dto = modelMapper.map(audioBook, DefaultAudioBookInfoDTO.class);
-        dto.setImage(fileSystemImageProvider.getImage(audioBook.getImageURL()));
         dto.setCreatedByCurrentUser(createdByUser.test(audioBook));
         return dto;
     }

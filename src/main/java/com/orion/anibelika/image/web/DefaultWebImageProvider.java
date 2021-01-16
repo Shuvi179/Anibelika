@@ -1,5 +1,6 @@
-package com.orion.anibelika.image;
+package com.orion.anibelika.image.web;
 
+import com.orion.anibelika.image.ImageFormat;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;

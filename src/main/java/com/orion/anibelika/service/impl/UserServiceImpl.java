@@ -7,6 +7,7 @@ import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.SimpleUser;
 import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.exception.RegistrationException;
+import com.orion.anibelika.image.ImageService;
 import com.orion.anibelika.mapper.UserMapper;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.repository.UserRepository;
@@ -14,6 +15,8 @@ import com.orion.anibelika.security.PasswordConfig;
 import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.service.UserService;
 import com.orion.anibelika.service.impl.login.LoginClientId;
+import com.orion.anibelika.url.URLPrefix;
+import com.orion.anibelika.url.URLProvider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -31,14 +34,18 @@ public class UserServiceImpl implements UserService {
     private final PasswordConfig passwordConfig;
     private final UserMapper userMapper;
     private final UserHelper userHelper;
+    private final URLProvider urlProvider;
+    private final ImageService imageService;
 
     public UserServiceImpl(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository, PasswordConfig passwordConfig,
-                           UserMapper userMapper, UserHelper userHelper) {
+                           UserMapper userMapper, UserHelper userHelper, URLProvider urlProvider, ImageService imageService) {
         this.userRepository = userRepository;
         this.dataUserRepository = dataUserRepository;
         this.passwordConfig = passwordConfig;
         this.userMapper = userMapper;
         this.userHelper = userHelper;
+        this.urlProvider = urlProvider;
+        this.imageService = imageService;
     }
 
     @Override
@@ -59,6 +66,9 @@ public class UserServiceImpl implements UserService {
         DataUser dataUser = new DataUser();
         dataUser.setNickName(registerUserDTO.getNickName());
         dataUser.setEmail(registerUserDTO.getEmail());
+        dataUser = dataUserRepository.save(dataUser);
+
+        dataUser.setImageURL(urlProvider.getUri(URLPrefix.USER, dataUser.getId()));
         dataUser = dataUserRepository.save(dataUser);
 
         SimpleUser user = new SimpleUser();
@@ -150,5 +160,18 @@ public class UserServiceImpl implements UserService {
             throw new RegistrationException("Confirmation Uuid is invalid: " + uuid);
         }
         return user;
+    }
+
+    @Override
+    public void saveUserImage(Long id, byte[] image) {
+        if (!userHelper.authenticatedWithId(id)) {
+            throw new PermissionException("Don't have access to this data");
+        }
+        imageService.saveImage(URLPrefix.USER, id, image);
+    }
+
+    @Override
+    public byte[] getUserImage(Long id) {
+        return imageService.getImage(URLPrefix.USER, id);
     }
 }
