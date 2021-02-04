@@ -1,6 +1,6 @@
 package com.orion.anibelika.service.impl;
 
-import com.orion.anibelika.dto.RegisterUserDTO;
+import com.orion.anibelika.dto.NewUserDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
@@ -17,6 +17,7 @@ import com.orion.anibelika.service.UserService;
 import com.orion.anibelika.service.impl.login.LoginClientId;
 import com.orion.anibelika.url.URLPrefix;
 import com.orion.anibelika.url.URLProvider;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String identification) {
-        AuthUser user = userRepository.findUserByIdentificationName(identification);
+        if (!EmailValidator.getInstance().isValid(identification)) {
+            throw new UsernameNotFoundException("email is invalid: " + identification);
+        }
+        AuthUser user = userRepository.findUserByIdentificationNameAndType(identification, LoginClientId.SIMPLE.getClientId());
         if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("No user with email: " + identification);
         }
@@ -59,13 +63,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public AuthUser addUser(RegisterUserDTO registerUserDTO) {
-        validateEmail(registerUserDTO.getEmail());
-        validateNickName(registerUserDTO.getNickName());
+    public AuthUser addUser(NewUserDTO newUserDTO) {
+        validateEmail(newUserDTO.getEmail());
+        validateNickName(newUserDTO.getNickName());
 
         DataUser dataUser = new DataUser();
-        dataUser.setNickName(registerUserDTO.getNickName());
-        dataUser.setEmail(registerUserDTO.getEmail());
+        dataUser.setNickName(newUserDTO.getNickName());
+        dataUser.setEmail(newUserDTO.getEmail());
         dataUser = dataUserRepository.save(dataUser);
 
         dataUser.setImageURL(urlProvider.getUri(URLPrefix.USER, dataUser.getId()));
@@ -73,16 +77,16 @@ public class UserServiceImpl implements UserService {
 
         SimpleUser user = new SimpleUser();
         user.setUser(dataUser);
-        user.setPassword(passwordConfig.passwordEncoder().encode(registerUserDTO.getPassword()));
-        user.setIdentificationName(registerUserDTO.getEmail());
-        user.setType(passwordConfig.passwordEncoder().encode(LoginClientId.SIMPLE.getClientId()));
+        user.setPassword(passwordConfig.passwordEncoder().encode(newUserDTO.getPassword()));
+        user.setIdentificationName(newUserDTO.getIdentification());
+        user.setType(newUserDTO.getType());
         user.setConfirmed(false);
         return userRepository.save(user);
     }
 
     @Override
     public DataUser getDataUser(AuthUser user) {
-        return dataUserRepository.getDataUserByAuthUser(user);
+        return dataUserRepository.getDataUserByAuthUserId(user.getId());
     }
 
     @Override
@@ -97,7 +101,6 @@ public class UserServiceImpl implements UserService {
         DataUser user = validateUserDTO(dto);
         user.setEmail(dto.getEmail());
         user.setNickName(dto.getNickName());
-        user.setFullName(dto.getFullName());
         user.getAuthUser().setIdentificationName(dto.getEmail());
         dataUserRepository.save(user);
     }

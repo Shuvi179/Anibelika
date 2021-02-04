@@ -20,9 +20,6 @@ public class DataUser {
     @Column(name = "nick_name", unique = true)
     private String nickName;
 
-    @Column(name = "full_name")
-    private String fullName;
-
     @Column(name = "email", unique = true)
     private String email;
 

@@ -1,7 +1,9 @@
 package com.orion.anibelika.service;
 
+import com.orion.anibelika.dto.CustomUserInfoDTO;
+
 import java.util.Map;
 
 public interface CustomLoginService {
-    void login(Map<String, Object> attributes, String clientId);
+    CustomUserInfoDTO login(Map<String, Object> attributes, String clientId);
 }

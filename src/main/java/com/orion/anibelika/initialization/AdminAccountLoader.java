@@ -53,7 +53,7 @@ public class AdminAccountLoader implements ApplicationRunner {
             adminRole = roleRepository.save(getRole(ROLE_ADMIN));
         }
 
-        SimpleUser admin = userRepository.findUserByIdentificationName(email);
+        SimpleUser admin = userRepository.findUserByIdentificationNameAndType(email, LoginClientId.SIMPLE.getClientId());
         if (Objects.isNull(admin)) {
             DataUser dataUser = new DataUser();
             dataUser.setNickName(nickName);

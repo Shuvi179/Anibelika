@@ -1,5 +1,7 @@
 package com.orion.anibelika.service.impl;
 
+import com.orion.anibelika.dto.CustomUserInfoDTO;
+import com.orion.anibelika.dto.NewUserDTO;
 import com.orion.anibelika.dto.RegisterUserDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
@@ -41,6 +43,16 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Override
     @Transactional
     public UserDTO registerUser(RegisterUserDTO dto) {
+        return register(userMapper.map(dto));
+    }
+
+    @Override
+    @Transactional
+    public UserDTO registerUser(CustomUserInfoDTO dto) {
+        return register(userMapper.map(dto));
+    }
+
+    private UserDTO register(NewUserDTO dto) {
         AuthUser newUser = userService.addUser(dto);
         sendRegisterMessage(newUser, dto.getEmail());
         return userMapper.map(userService.getDataUser(newUser));

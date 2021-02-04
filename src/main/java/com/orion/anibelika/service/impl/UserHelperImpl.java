@@ -32,7 +32,7 @@ public class UserHelperImpl implements UserHelper {
     @Override
     public DataUser getCurrentDataUser() {
         AuthUser currentUser = getCurrentUser();
-        return dataUserRepository.getDataUserByAuthUser(currentUser);
+        return dataUserRepository.getDataUserByAuthUserId(currentUser.getId());
     }
 
     @Override
@@ -44,7 +44,7 @@ public class UserHelperImpl implements UserHelper {
         if (currentUser.getRoles().contains(ApplicationSecurityRole.getRole(ROLE_ADMIN))) {
             return true;
         }
-        DataUser currentDataUser = dataUserRepository.getDataUserByAuthUser(currentUser);
+        DataUser currentDataUser = dataUserRepository.getDataUserByAuthUserId(currentUser.getId());
         return currentDataUser.getId().equals(id);
     }
 }

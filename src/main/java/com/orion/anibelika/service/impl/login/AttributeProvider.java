@@ -4,12 +4,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AttributeProvider {
-    public static final String SOCIAL_ID = "id";
-    public static final String NAME = "name";
-    public static final String PASSWORD = "password";
+    public static final String KEY_SOCIAL_ID = "id";
+    public static final String KEY_NAME = "name";
+    public static final String KEY_PASSWORD = "password";
+    public static final String KEY_EMAIL = "email";
 
-    private static final String ID = "id";
-    private static final String EMAIL = "email";
+    private static final String VALUE_ID = "id";
+    private static final String VALUE_EMAIL = "email";
+    private static final String VALUE_SUB = "sub";
+    private static final String VALUE_NAME = "name";
 
     private static final Map<String, String> FACEBOOK_ATTRIBUTES = new HashMap<>();
     private static final Map<String, String> GOOGLE_ATTRIBUTES = new HashMap<>();
@@ -33,14 +36,16 @@ public class AttributeProvider {
     }
 
     private static void initFacebook() {
-        FACEBOOK_ATTRIBUTES.put(SOCIAL_ID, ID);
-        FACEBOOK_ATTRIBUTES.put(NAME, NAME);
-        FACEBOOK_ATTRIBUTES.put(PASSWORD, LoginClientId.FACEBOOK.getClientId());
+        FACEBOOK_ATTRIBUTES.put(KEY_SOCIAL_ID, VALUE_ID);
+        FACEBOOK_ATTRIBUTES.put(KEY_NAME, VALUE_NAME);
+        FACEBOOK_ATTRIBUTES.put(KEY_PASSWORD, LoginClientId.FACEBOOK.getClientId());
+        FACEBOOK_ATTRIBUTES.put(KEY_EMAIL, VALUE_EMAIL);
     }
 
     private static void initGoogle() {
-        GOOGLE_ATTRIBUTES.put(SOCIAL_ID, EMAIL);
-        GOOGLE_ATTRIBUTES.put(NAME, NAME);
-        GOOGLE_ATTRIBUTES.put(PASSWORD, LoginClientId.GOOGLE.getClientId());
+        GOOGLE_ATTRIBUTES.put(KEY_SOCIAL_ID, VALUE_SUB);
+        GOOGLE_ATTRIBUTES.put(KEY_NAME, VALUE_NAME);
+        GOOGLE_ATTRIBUTES.put(KEY_PASSWORD, LoginClientId.GOOGLE.getClientId());
+        GOOGLE_ATTRIBUTES.put(KEY_EMAIL, VALUE_EMAIL);
     }
 }
