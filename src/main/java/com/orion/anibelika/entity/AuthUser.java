@@ -31,7 +31,7 @@ public class AuthUser implements UserDetails {
     private boolean confirmed;
 
     @OneToOne(orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn()
+    @JoinColumn
     private DataUser user;
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
