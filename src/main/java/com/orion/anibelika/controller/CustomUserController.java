@@ -4,6 +4,7 @@ import com.orion.anibelika.dto.CustomUserInfoDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.service.CustomLoginService;
 import com.orion.anibelika.service.RegistrationService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,6 +26,7 @@ public class CustomUserController {
     }
 
     @GetMapping
+    @Operation(summary = "Get custom user information")
     public ResponseEntity<CustomUserInfoDTO> getOauth2LoginInfo(@AuthenticationPrincipal OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         return new ResponseEntity<>(loginService.login(oAuth2AuthenticationToken.getPrincipal().getAttributes(),
                 oAuth2AuthenticationToken.getAuthorizedClientRegistrationId()),
@@ -32,6 +34,7 @@ public class CustomUserController {
     }
 
     @PostMapping
+    @Operation(summary = "Add new custom user")
     public ResponseEntity<UserDTO> registerCustomUser(@RequestBody @Valid CustomUserInfoDTO dto) {
         return new ResponseEntity<>(registrationService.registerUser(dto), HttpStatus.OK);
     }

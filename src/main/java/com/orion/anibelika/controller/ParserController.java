@@ -3,6 +3,7 @@ package com.orion.anibelika.controller;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.ParseDTO;
 import com.orion.anibelika.parser.ParseService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +23,7 @@ public class ParserController {
     }
 
     @PostMapping
+    @Operation(summary = "Get book info from shikimori")
     public ResponseEntity<DefaultAudioBookInfoDTO> parseBookByUrl(@RequestBody @Validated ParseDTO dto) {
         return new ResponseEntity<>(parseService.parseBookByUrl(dto.getUrl()), HttpStatus.OK);
     }

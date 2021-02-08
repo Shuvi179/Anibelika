@@ -4,11 +4,16 @@ import com.orion.anibelika.dto.RegisterUserDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.service.RegistrationService;
 import com.orion.anibelika.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import java.io.IOException;
 
 @RestController
 @RequestMapping(value = "/api/v1/user")
@@ -22,23 +27,38 @@ public class UserController {
     }
 
     @PostMapping
+    @Operation(summary = "Add new user")
     public ResponseEntity<UserDTO> addNewUser(@RequestBody @Valid RegisterUserDTO registerUserDTO) {
         return new ResponseEntity<>(registrationService.registerUser(registerUserDTO), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}")
+    @Operation(summary = "Get user by id")
     public ResponseEntity<UserDTO> getUser(@PathVariable Long id) {
         return new ResponseEntity<>(userService.getUserDataById(id), HttpStatus.OK);
     }
 
     @PutMapping
+    @Operation(summary = "Update user info")
     public void updateUser(@RequestBody @Valid UserDTO dto) {
         userService.updateUser(dto);
     }
 
     @GetMapping(value = "/confirm")
+    @Operation(summary = "Confirm user account")
     public void confirmUser(@RequestParam String uuid) {
         userService.confirmUser(uuid);
     }
 
+    @GetMapping(value = "/{id}/image", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Get image for user by id")
+    public byte[] getUserImage(@PathVariable @Min(1) Long id) {
+        return userService.getUserImage(id);
+    }
+
+    @PostMapping(value = "/{id}/image")
+    @Operation(summary = "Update user image by id")
+    public void addUserImage(@PathVariable @Min(1) Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        userService.saveUserImage(id, file.getBytes());
+    }
 }

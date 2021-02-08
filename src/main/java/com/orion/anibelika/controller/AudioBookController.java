@@ -3,13 +3,16 @@ package com.orion.anibelika.controller;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.service.AudioBookService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
-import java.util.Optional;
+import java.io.IOException;
 
 @RestController
 @Validated
@@ -25,23 +28,38 @@ public class AudioBookController {
     }
 
     @GetMapping(value = "/{id}")
+    @Operation(summary = "Get book by id")
     public ResponseEntity<DefaultAudioBookInfoDTO> getAudioBookById(@PathVariable @Min(1) Long id) {
         return new ResponseEntity<>(audioBookService.getBookById(id), HttpStatus.OK);
     }
 
     @GetMapping(value = "/page")
-    public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@RequestParam @Min(1) Integer pageNumber,
-                                                                          @RequestParam Optional<Integer> elementsByPage) {
-        return new ResponseEntity<>(audioBookService.getAudioBookPage(pageNumber, elementsByPage.orElse(DEFAULT_ELEMENTS_ON_PAGE_NUMBER)), HttpStatus.OK);
+    @Operation(summary = "Get page of books")
+    public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@RequestParam @Min(1) Integer pageNumber) {
+        return new ResponseEntity<>(audioBookService.getAudioBookPage(pageNumber, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
     }
 
     @PostMapping
+    @Operation(summary = "Add new book")
     public void addNewAudioBook(@RequestBody @Validated DefaultAudioBookInfoDTO dto) {
         audioBookService.addAudioBook(dto);
     }
 
     @PutMapping
+    @Operation(summary = "Update book by id")
     public void updateAudioBook(@RequestBody @Validated DefaultAudioBookInfoDTO dto) {
         audioBookService.updateAudioBook(dto);
+    }
+
+    @GetMapping(value = "/{id}/image", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Get image for book by id")
+    public byte[] getBookImage(@PathVariable @Min(1) Long id) {
+        return audioBookService.getBookImage(id);
+    }
+
+    @PostMapping(value = "/{id}/image")
+    @Operation(summary = "Update book image by id")
+    public void addBookImage(@PathVariable @Min(1) Long id, @RequestParam("file") MultipartFile file) throws IOException {
+        audioBookService.saveBookImage(id, file.getBytes());
     }
 }

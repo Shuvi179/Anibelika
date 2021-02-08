@@ -3,6 +3,7 @@ package com.orion.anibelika.controller;
 import com.orion.anibelika.dto.NewCommentDTO;
 import com.orion.anibelika.dto.PaginationCommentDTO;
 import com.orion.anibelika.service.CommentService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,12 +23,14 @@ public class CommentController {
     }
 
     @GetMapping(value = "/page")
+    @Operation(summary = "Get comments page by book")
     public ResponseEntity<PaginationCommentDTO> getPaginationCommentByBook(@PathVariable @Min(1) Long bookId,
                                                                            @RequestParam @Min(1) int pageNumber) {
         return new ResponseEntity<>(commentService.getCommentPageByBook(bookId, pageNumber, NUMBER_OF_COMMENTS_BY_PAGE), HttpStatus.OK);
     }
 
     @PostMapping
+    @Operation(summary = "Add new comment by book")
     public void addNewComment(@PathVariable @Min(1) Long bookId, @RequestBody NewCommentDTO commentDTO) {
         commentService.addNewComment(commentDTO, bookId);
     }
