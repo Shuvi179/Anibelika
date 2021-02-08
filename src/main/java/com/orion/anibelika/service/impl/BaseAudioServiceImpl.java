@@ -21,7 +21,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
 
     @Override
     public Long addNewAudio(AudioDTO audioDTO) {
-        AudioBook book = audioBookService.getBookEntityById(audioDTO.getBookId());
+        AudioBook book = audioBookService.getPermittedBookEntityById(audioDTO.getBookId());
         BaseAudio baseAudio = new BaseAudio();
         baseAudio.setName(audioDTO.getName());
         baseAudio.setBook(book);

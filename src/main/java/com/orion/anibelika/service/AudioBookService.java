@@ -7,6 +7,8 @@ import com.orion.anibelika.entity.AudioBook;
 public interface AudioBookService {
     DefaultAudioBookInfoDTO getBookById(Long id);
 
+    AudioBook getPermittedBookEntityById(Long id);
+
     AudioBook getBookEntityById(Long id);
 
     void addAudioBook(DefaultAudioBookInfoDTO dto);

@@ -40,7 +40,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/css/*", "/js/*").permitAll()
-                .antMatchers(servletPath + "/book/*").authenticated()
+                //.antMatchers(servletPath + "/book/*").authenticated()
                 .anyRequest().permitAll()
                 .and().formLogin()
                 .and().oauth2Login().defaultSuccessUrl(servletPath + "/oauth2Login");

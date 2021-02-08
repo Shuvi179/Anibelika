@@ -23,11 +23,11 @@ public class DataUser {
     @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "image")
-    private String imageURL;
-
     @OneToMany(mappedBy = "user")
     private Set<AudioBook> audioBooks;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Comment> comments;
 
     @OneToOne(mappedBy = "user")
     private AuthUser authUser;

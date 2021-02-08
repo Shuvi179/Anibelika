@@ -16,7 +16,6 @@ import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.service.UserService;
 import com.orion.anibelika.service.impl.login.LoginClientId;
 import com.orion.anibelika.url.URLPrefix;
-import com.orion.anibelika.url.URLProvider;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,17 +34,15 @@ public class UserServiceImpl implements UserService {
     private final PasswordConfig passwordConfig;
     private final UserMapper userMapper;
     private final UserHelper userHelper;
-    private final URLProvider urlProvider;
     private final ImageService imageService;
 
     public UserServiceImpl(UserRepository<AuthUser> userRepository, DataUserRepository dataUserRepository, PasswordConfig passwordConfig,
-                           UserMapper userMapper, UserHelper userHelper, URLProvider urlProvider, ImageService imageService) {
+                           UserMapper userMapper, UserHelper userHelper, ImageService imageService) {
         this.userRepository = userRepository;
         this.dataUserRepository = dataUserRepository;
         this.passwordConfig = passwordConfig;
         this.userMapper = userMapper;
         this.userHelper = userHelper;
-        this.urlProvider = urlProvider;
         this.imageService = imageService;
     }
 
@@ -70,9 +67,6 @@ public class UserServiceImpl implements UserService {
         DataUser dataUser = new DataUser();
         dataUser.setNickName(newUserDTO.getNickName());
         dataUser.setEmail(newUserDTO.getEmail());
-        dataUser = dataUserRepository.save(dataUser);
-
-        dataUser.setImageURL(urlProvider.getUri(URLPrefix.USER, dataUser.getId()));
         dataUser = dataUserRepository.save(dataUser);
 
         SimpleUser user = new SimpleUser();

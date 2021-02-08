@@ -19,7 +19,7 @@ public class EmailConfirmation {
     @Column(unique = true, nullable = false)
     private String uuid;
 
-    @OneToOne()
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private AuthUser user;
 }

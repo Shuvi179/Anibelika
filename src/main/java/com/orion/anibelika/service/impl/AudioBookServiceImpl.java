@@ -5,13 +5,11 @@ import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.image.ImageService;
-import com.orion.anibelika.image.fs.FileSystemImageProvider;
 import com.orion.anibelika.mapper.BookMapper;
 import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.url.URLPrefix;
-import com.orion.anibelika.url.URLProvider;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,18 +26,13 @@ public class AudioBookServiceImpl implements AudioBookService {
 
     private final AudioBookRepository audioBookRepository;
     private final BookMapper mapper;
-    private final FileSystemImageProvider fileSystemImageProvider;
-    private final URLProvider urlProvider;
     private final UserHelper userHelper;
     private final ImageService imageService;
 
     public AudioBookServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
-                                FileSystemImageProvider fileSystemImageProvider, URLProvider urlProvider,
                                 UserHelper userHelper, ImageService imageService) {
         this.audioBookRepository = audioBookRepository;
         this.mapper = mapper;
-        this.fileSystemImageProvider = fileSystemImageProvider;
-        this.urlProvider = urlProvider;
         this.userHelper = userHelper;
         this.imageService = imageService;
     }
@@ -50,25 +43,28 @@ public class AudioBookServiceImpl implements AudioBookService {
     }
 
     @Override
-    public AudioBook getBookEntityById(Long id) {
+    public AudioBook getPermittedBookEntityById(Long id) {
         return validateBookById(id);
+    }
+
+    @Override
+    public AudioBook getBookEntityById(Long id) {
+        return validateGetById(id);
     }
 
     @Override
     @Transactional
     public void addAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook book = validateAddBook(dto);
-        String imageUrl = urlProvider.getPath(URLPrefix.BOOK, book.getId());
-        book.setImageURL(imageUrl);
-        fileSystemImageProvider.saveImage(imageUrl, dto.getImage());
-        audioBookRepository.save(book);
+        AudioBook saved = audioBookRepository.save(book);
+        saveBookImage(saved.getId(), dto.getImage());
     }
 
     private AudioBook validateAddBook(@NotNull DefaultAudioBookInfoDTO dto) {
         if (Objects.nonNull(dto.getId())) {
             throw new IllegalArgumentException("book id must be null");
         }
-        if (userHelper.isCurrentUserAuthenticated()) {
+        if (!userHelper.isCurrentUserAuthenticated()) {
             throw new PermissionException("User need to log in");
         }
         return mapper.map(dto);
@@ -77,9 +73,7 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Override
     @Transactional
     public void updateAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
-        AudioBook currentBook = validateBookById(dto.getId());
         AudioBook newBook = mapper.map(dto);
-        newBook.setImageURL(currentBook.getImageURL());
         audioBookRepository.save(newBook);
     }
 

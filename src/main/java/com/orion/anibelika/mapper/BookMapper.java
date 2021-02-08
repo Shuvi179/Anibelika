@@ -4,7 +4,6 @@ import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.service.UserHelper;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 @Component
 public class BookMapper {
 
-    private ModelMapper modelMapper = new ModelMapper();
     private final UserHelper userHelper;
 
     public BookMapper(UserHelper userHelper) {
@@ -27,7 +25,10 @@ public class BookMapper {
     }
 
     public AudioBook map(DefaultAudioBookInfoDTO dto) {
-        AudioBook book = modelMapper.map(dto, AudioBook.class);
+        AudioBook book = new AudioBook();
+        book.setName(dto.getName());
+        book.setDescription(dto.getDescription());
+        book.setTome(dto.getTome());
         book.setUser(userHelper.getCurrentDataUser());
         return book;
     }
@@ -40,7 +41,11 @@ public class BookMapper {
     }
 
     private DefaultAudioBookInfoDTO getDefaultDto(AudioBook audioBook, Predicate<AudioBook> createdByUser) {
-        DefaultAudioBookInfoDTO dto = modelMapper.map(audioBook, DefaultAudioBookInfoDTO.class);
+        DefaultAudioBookInfoDTO dto = new DefaultAudioBookInfoDTO();
+        dto.setId(audioBook.getId());
+        dto.setTome(audioBook.getTome());
+        dto.setName(audioBook.getName());
+        dto.setDescription(audioBook.getDescription());
         dto.setCreatedByCurrentUser(createdByUser.test(audioBook));
         return dto;
     }
