@@ -20,4 +20,6 @@ public interface AudioBookService {
     void saveBookImage(Long id, byte[] image);
 
     byte[] getBookImage(Long id);
+
+    byte[] getSmallBookImage(Long id);
 }

@@ -56,6 +56,12 @@ public class UserController {
         return userService.getUserImage(id);
     }
 
+    @GetMapping(value = "/{id}/image/small", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Get small image for user by id")
+    public byte[] getSmallUserImage(@PathVariable @Min(1) Long id) {
+        return userService.getSmallUserImage(id);
+    }
+
     @PostMapping(value = "/{id}/image")
     @Operation(summary = "Update user image by id")
     public void addUserImage(@PathVariable @Min(1) Long id, @RequestParam("file") MultipartFile file) throws IOException {

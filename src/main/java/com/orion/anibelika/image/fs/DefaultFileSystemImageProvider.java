@@ -1,30 +1,50 @@
 package com.orion.anibelika.image.fs;
 
 
+import org.imgscalr.Scalr;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.Objects;
 
 @Component
 public class DefaultFileSystemImageProvider implements FileSystemImageProvider {
 
     @Override
-    public void saveImage(String path, byte[] photo) {
-        if (StringUtils.isEmpty(path) || Objects.isNull(photo) || photo.length == 0) {
+    public void saveImage(String path, byte[] image) {
+        if (StringUtils.isEmpty(path) || Objects.isNull(image) || image.length == 0) {
             return;
         }
 
         File file = new File(path);
         try (FileOutputStream fileOutputStream = new FileOutputStream(file, false)) {
-            fileOutputStream.write(photo);
+            fileOutputStream.write(image);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void saveSmallImage(String path, byte[] image) {
+        if (StringUtils.isEmpty(path) || Objects.isNull(image) || image.length == 0) {
+            return;
+        }
+        InputStream is = new ByteArrayInputStream(image);
+        try {
+            BufferedImage originalImage = ImageIO.read(is);
+            BufferedImage smallImage = simpleResizeImage(originalImage, 100, 100);
+            File file = new File(path);
+            ImageIO.write(smallImage, "jpg", file);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    BufferedImage simpleResizeImage(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        return Scalr.resize(originalImage, targetWidth, targetHeight);
     }
 
     @Override

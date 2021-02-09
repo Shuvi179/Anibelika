@@ -165,10 +165,16 @@ public class UserServiceImpl implements UserService {
             throw new PermissionException("Don't have access to this data");
         }
         imageService.saveImage(URLPrefix.USER, id, image);
+        imageService.saveSmallImage(URLPrefix.USER, id, image);
     }
 
     @Override
     public byte[] getUserImage(Long id) {
         return imageService.getImage(URLPrefix.USER, id);
+    }
+
+    @Override
+    public byte[] getSmallUserImage(Long id) {
+        return imageService.getSmallImage(URLPrefix.USER, id);
     }
 }

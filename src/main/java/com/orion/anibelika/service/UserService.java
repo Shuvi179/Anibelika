@@ -20,4 +20,6 @@ public interface UserService extends UserDetailsService {
     void saveUserImage(Long id, byte[] image);
 
     byte[] getUserImage(Long id);
+
+    byte[] getSmallUserImage(Long id);
 }

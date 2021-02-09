@@ -23,8 +23,20 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public void saveSmallImage(URLPrefix prefix, Long id, byte[] image) {
+        String path = urlProvider.getSmallPath(prefix, id);
+        fileSystemImageProvider.saveSmallImage(path, image);
+    }
+
+    @Override
     public byte[] getImage(URLPrefix prefix, Long id) {
         String path = urlProvider.getPath(prefix, id);
+        return fileSystemImageProvider.getImage(path);
+    }
+
+    @Override
+    public byte[] getSmallImage(URLPrefix prefix, Long id) {
+        String path = urlProvider.getSmallPath(prefix, id);
         return fileSystemImageProvider.getImage(path);
     }
 }

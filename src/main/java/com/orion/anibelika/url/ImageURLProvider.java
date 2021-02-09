@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 public class ImageURLProvider implements URLProvider {
 
     private static final String DEFAULT_IMAGE_FORMAT = ".jpg";
+    private static final String SMALL_PREFIX = "/small";
 
     @Value("${anibelica.image.url.root}")
     private String imageRootPropertyKey;
@@ -14,6 +15,11 @@ public class ImageURLProvider implements URLProvider {
     @Override
     public String getPath(URLPrefix prefix, Long id) {
         return imageRootPropertyKey + getUri(prefix, id);
+    }
+
+    @Override
+    public String getSmallPath(URLPrefix prefix, Long id) {
+        return imageRootPropertyKey + SMALL_PREFIX + getUri(prefix, id);
     }
 
     @Override

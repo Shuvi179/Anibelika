@@ -57,6 +57,12 @@ public class AudioBookController {
         return audioBookService.getBookImage(id);
     }
 
+    @GetMapping(value = "/{id}/image/small", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Get small image for book by id")
+    public byte[] getSmallBookImage(@PathVariable @Min(1) Long id) {
+        return audioBookService.getSmallBookImage(id);
+    }
+
     @PostMapping(value = "/{id}/image")
     @Operation(summary = "Update book image by id")
     public void addBookImage(@PathVariable @Min(1) Long id, @RequestParam("file") MultipartFile file) throws IOException {

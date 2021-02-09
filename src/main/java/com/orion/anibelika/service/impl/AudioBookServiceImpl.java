@@ -108,10 +108,16 @@ public class AudioBookServiceImpl implements AudioBookService {
     public void saveBookImage(Long id, byte[] image) {
         validateBookById(id);
         imageService.saveImage(URLPrefix.BOOK, id, image);
+        imageService.saveSmallImage(URLPrefix.BOOK, id, image);
     }
 
     @Override
     public byte[] getBookImage(Long id) {
         return imageService.getImage(URLPrefix.BOOK, id);
+    }
+
+    @Override
+    public byte[] getSmallBookImage(Long id) {
+        return imageService.getSmallImage(URLPrefix.BOOK, id);
     }
 }
