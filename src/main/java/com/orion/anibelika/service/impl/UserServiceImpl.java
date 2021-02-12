@@ -2,6 +2,7 @@ package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.NewUserDTO;
 import com.orion.anibelika.dto.PasswordResetDTO;
+import com.orion.anibelika.dto.UpdatePasswordDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
@@ -170,8 +171,33 @@ public class UserServiceImpl implements UserService {
         passwordResetService.deleteResetToken(uuid);
     }
 
+    @Override
+    @Transactional
+    public void updateUserPassword(UpdatePasswordDTO dto) {
+        AuthUser user = userHelper.getCurrentUser();
+        validatePassword(dto.getOldPassword(), user.getPassword());
+        updatePassword(user, dto.getNewPassword());
+    }
+
+    @Override
+    @Transactional
+    public void updateUserNickName(String nickName) {
+        DataUser user = userHelper.getCurrentDataUser();
+        if (!user.getNickName().equalsIgnoreCase(nickName)) {
+            validateNickName(nickName);
+        }
+        user.setNickName(nickName);
+        dataUserRepository.save(user);
+    }
+
     private void updatePassword(AuthUser user, String password) {
         user.setPassword(passwordConfig.passwordEncoder().encode(password));
         userRepository.save(user);
+    }
+
+    private void validatePassword(String password, String encodedPassword) {
+        if (!passwordConfig.passwordEncoder().matches(password, encodedPassword)) {
+            throw new PermissionException("Password mismatch");
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
+import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.security.ApplicationSecurityRole;
 import com.orion.anibelika.service.UserHelper;
@@ -22,6 +23,9 @@ public class UserHelperImpl implements UserHelper {
 
     @Override
     public AuthUser getCurrentUser() {
+        if (!isCurrentUserAuthenticated()) {
+            throw new PermissionException("No access to this data");
+        }
         return (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 

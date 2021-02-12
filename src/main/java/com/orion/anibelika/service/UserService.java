@@ -2,6 +2,7 @@ package com.orion.anibelika.service;
 
 import com.orion.anibelika.dto.NewUserDTO;
 import com.orion.anibelika.dto.PasswordResetDTO;
+import com.orion.anibelika.dto.UpdatePasswordDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.DataUser;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,4 +23,8 @@ public interface UserService extends UserDetailsService {
     void startResetPasswordProcess(String email);
 
     void resetUserPassword(String uuid, PasswordResetDTO dto);
+
+    void updateUserPassword(UpdatePasswordDTO dto);
+
+    void updateUserNickName(String nickName);
 }

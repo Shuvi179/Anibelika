@@ -2,6 +2,7 @@ package com.orion.anibelika.controller;
 
 import com.orion.anibelika.dto.PasswordResetDTO;
 import com.orion.anibelika.dto.RegisterUserDTO;
+import com.orion.anibelika.dto.UpdatePasswordDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.service.RegistrationService;
 import com.orion.anibelika.service.UserService;
@@ -70,8 +71,20 @@ public class UserController {
     }
 
     @PutMapping(value = "/reset")
-    @Operation(summary = "Change user password")
+    @Operation(summary = "Reset user password")
     public void resetUserPassword(@RequestParam String uuid, @RequestBody @Valid PasswordResetDTO dto) {
         userService.resetUserPassword(uuid, dto);
+    }
+
+    @PutMapping(value = "/password")
+    @Operation(summary = "Update user password")
+    public void updateUserPassword(@RequestBody UpdatePasswordDTO dto) {
+        userService.updateUserPassword(dto);
+    }
+
+    @PutMapping(value = "/nickname/{nickName}")
+    @Operation(summary = "Update user nickName")
+    public void updateUserNickName(@PathVariable String nickName) {
+        userService.updateUserNickName(nickName);
     }
 }
