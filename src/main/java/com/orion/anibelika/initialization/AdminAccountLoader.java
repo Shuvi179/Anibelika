@@ -1,8 +1,8 @@
 package com.orion.anibelika.initialization;
 
+import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.Role;
-import com.orion.anibelika.entity.SimpleUser;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.repository.RoleRepository;
 import com.orion.anibelika.repository.UserRepository;
@@ -32,12 +32,12 @@ public class AdminAccountLoader implements ApplicationRunner {
     @Value("${admin.account.password}")
     private String password;
 
-    private final UserRepository<SimpleUser> userRepository;
+    private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordConfig passwordConfig;
     private final DataUserRepository dataUserRepository;
 
-    public AdminAccountLoader(UserRepository<SimpleUser> userRepository, RoleRepository roleRepository,
+    public AdminAccountLoader(UserRepository userRepository, RoleRepository roleRepository,
                               PasswordConfig passwordConfig, DataUserRepository dataUserRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -53,25 +53,24 @@ public class AdminAccountLoader implements ApplicationRunner {
             adminRole = roleRepository.save(getRole(ROLE_ADMIN));
         }
 
-        SimpleUser admin = userRepository.findUserByIdentificationNameAndType(email, LoginClientId.SIMPLE.getClientId());
+        AuthUser admin = userRepository.findUserByEmail(email);
         if (Objects.isNull(admin)) {
             DataUser dataUser = new DataUser();
             dataUser.setNickName(nickName);
-            dataUser.setEmail(email);
             dataUser = dataUserRepository.save(dataUser);
 
-            admin = new SimpleUser();
-            admin.setIdentificationName(email);
+            admin = new AuthUser();
+            admin.setIdentificationName(null);
+            admin.setEmail(email);
             admin.setType(LoginClientId.SIMPLE.getClientId());
             admin.setPassword(passwordConfig.passwordEncoder().encode(password));
             admin.setConfirmed(true);
             admin.setRoles(Set.of(adminRole));
             admin.setUser(dataUser);
         } else {
-            admin.setIdentificationName(email);
+            admin.setIdentificationName(null);
             admin.getUser().setNickName(nickName);
             admin.setPassword(passwordConfig.passwordEncoder().encode(password));
-            admin.getUser().setEmail(email);
         }
         userRepository.save(admin);
     }

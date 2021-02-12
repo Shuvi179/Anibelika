@@ -32,6 +32,8 @@ public class ParseServiceImpl implements ParseService {
             dto.setImage(webImageProvider.getImage(parseImageURL(page)));
             dto.setName(getName(page).trim());
             dto.setDescription(getDescription(page));
+            dto.setCreatedByCurrentUser(false);
+            dto.setTome(0L);
         } catch (IOException e) {
             e.printStackTrace();
         }

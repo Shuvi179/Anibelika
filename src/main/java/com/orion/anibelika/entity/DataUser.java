@@ -20,9 +20,6 @@ public class DataUser {
     @Column(name = "nick_name", unique = true)
     private String nickName;
 
-    @Column(name = "email", unique = true)
-    private String email;
-
     @OneToMany(mappedBy = "user")
     private Set<AudioBook> audioBooks;
 

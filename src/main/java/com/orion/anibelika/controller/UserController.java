@@ -1,5 +1,6 @@
 package com.orion.anibelika.controller;
 
+import com.orion.anibelika.dto.PasswordResetDTO;
 import com.orion.anibelika.dto.RegisterUserDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.service.RegistrationService;
@@ -38,12 +39,6 @@ public class UserController {
         return new ResponseEntity<>(userService.getUserDataById(id), HttpStatus.OK);
     }
 
-    @PutMapping
-    @Operation(summary = "Update user info")
-    public void updateUser(@RequestBody @Valid UserDTO dto) {
-        userService.updateUser(dto);
-    }
-
     @GetMapping(value = "/confirm")
     @Operation(summary = "Confirm user account")
     public void confirmUser(@RequestParam String uuid) {
@@ -66,5 +61,17 @@ public class UserController {
     @Operation(summary = "Update user image by id")
     public void addUserImage(@PathVariable @Min(1) Long id, @RequestParam("file") MultipartFile file) throws IOException {
         userService.saveUserImage(id, file.getBytes());
+    }
+
+    @PostMapping(value = "/reset")
+    @Operation(summary = "Start password reset process")
+    public void startResetProcess(@RequestParam String email) {
+        userService.startResetPasswordProcess(email);
+    }
+
+    @PutMapping(value = "/reset")
+    @Operation(summary = "Change user password")
+    public void resetUserPassword(@RequestParam String uuid, @RequestBody @Valid PasswordResetDTO dto) {
+        userService.resetUserPassword(uuid, dto);
     }
 }

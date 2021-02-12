@@ -21,7 +21,13 @@ public class AuthUser implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "identification_name", nullable = false, length = 64)
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column
+    private String password;
+
+    @Column(name = "identification_name", length = 64)
     private String identificationName;
 
     @Column(name = "type", nullable = false)
@@ -37,6 +43,9 @@ public class AuthUser implements UserDetails {
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private EmailConfirmation emailConfirmation;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private PasswordResetToken passwordResetToken;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
@@ -47,12 +56,12 @@ public class AuthUser implements UserDetails {
 
     @Override
     public String getPassword() {
-        return type;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return identificationName;
+        return email;
     }
 
     @Override

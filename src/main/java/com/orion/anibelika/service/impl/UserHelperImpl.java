@@ -20,7 +20,8 @@ public class UserHelperImpl implements UserHelper {
         this.dataUserRepository = dataUserRepository;
     }
 
-    private AuthUser getCurrentUser() {
+    @Override
+    public AuthUser getCurrentUser() {
         return (AuthUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 

@@ -1,5 +1,6 @@
 package com.orion.anibelika.validation.logic;
 
+import com.orion.anibelika.dto.PasswordResetDTO;
 import com.orion.anibelika.dto.RegisterUserDTO;
 import com.orion.anibelika.validation.annotation.PasswordMatches;
 
@@ -16,7 +17,11 @@ public class PasswordMatchesValidator
 
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
-        RegisterUserDTO user = (RegisterUserDTO) obj;
-        return user.getPassword().equals(user.getMatchingPassword());
+        if (obj instanceof RegisterUserDTO) {
+            RegisterUserDTO user = (RegisterUserDTO) obj;
+            return user.getPassword().equals(user.getMatchingPassword());
+        }
+        PasswordResetDTO dto = (PasswordResetDTO) obj;
+        return dto.getPassword().equals(dto.getMatchingPassword());
     }
 }

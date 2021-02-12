@@ -5,6 +5,7 @@ import com.orion.anibelika.dto.NewUserDTO;
 import com.orion.anibelika.dto.RegisterUserDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
+import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.EmailConfirmation;
 import com.orion.anibelika.mapper.UserMapper;
 import com.orion.anibelika.repository.EmailConfirmationRepository;
@@ -53,9 +54,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     private UserDTO register(NewUserDTO dto) {
-        AuthUser newUser = userService.addUser(dto);
-        sendRegisterMessage(newUser, dto.getEmail());
-        return userMapper.map(userService.getDataUser(newUser));
+        DataUser newUser = userService.addUser(dto);
+        sendRegisterMessage(newUser.getAuthUser(), dto.getEmail());
+        return userMapper.map(newUser);
     }
 
     private void sendRegisterMessage(AuthUser user, String email) {

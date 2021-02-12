@@ -35,7 +35,9 @@ public class CustomUserController {
 
     @PostMapping
     @Operation(summary = "Add new custom user")
-    public ResponseEntity<UserDTO> registerCustomUser(@RequestBody @Valid CustomUserInfoDTO dto) {
+    public ResponseEntity<UserDTO> registerCustomUser(@AuthenticationPrincipal OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                                                      @RequestBody @Valid CustomUserInfoDTO dto) {
+        loginService.validateRegistrationToken(oAuth2AuthenticationToken, dto);
         return new ResponseEntity<>(registrationService.registerUser(dto), HttpStatus.OK);
     }
 }
