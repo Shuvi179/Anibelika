@@ -26,6 +26,9 @@ public class DataUser {
     @OneToMany(mappedBy = "user")
     private Set<Comment> comments;
 
+    @OneToMany
+    private Set<DonateRequisite> requisites;
+
     @OneToOne(mappedBy = "user")
     private AuthUser authUser;
 }
