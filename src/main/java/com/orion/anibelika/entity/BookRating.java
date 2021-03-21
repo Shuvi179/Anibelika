@@ -6,27 +6,29 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.Set;
 
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Entity
-@Table(name = "password_reset_token")
-public class PasswordResetToken {
+@Table(name = "book_rating")
+public class BookRating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String uuid;
+    @Column
+    private Long ratingSum = 0L;
 
     @Column
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date expireTime;
+    private Long numberOfVotes = 0L;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn
-    private AuthUser user;
+    private AudioBook book;
+
+    @OneToMany(mappedBy = "bookRating")
+    private Set<BookRatingVote> votes;
 }

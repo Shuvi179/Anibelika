@@ -8,6 +8,7 @@ import com.orion.anibelika.image.ImageService;
 import com.orion.anibelika.mapper.BookMapper;
 import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.service.AudioBookService;
+import com.orion.anibelika.service.BookRatingService;
 import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.url.URLPrefix;
 import org.springframework.data.domain.PageRequest;
@@ -28,13 +29,15 @@ public class AudioBookServiceImpl implements AudioBookService {
     private final BookMapper mapper;
     private final UserHelper userHelper;
     private final ImageService imageService;
+    private final BookRatingService bookRatingService;
 
     public AudioBookServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
-                                UserHelper userHelper, ImageService imageService) {
+                                UserHelper userHelper, ImageService imageService, BookRatingService bookRatingService) {
         this.audioBookRepository = audioBookRepository;
         this.mapper = mapper;
         this.userHelper = userHelper;
         this.imageService = imageService;
+        this.bookRatingService = bookRatingService;
     }
 
     @Override
@@ -57,6 +60,7 @@ public class AudioBookServiceImpl implements AudioBookService {
     public void addAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook book = validateAddBook(dto);
         AudioBook saved = audioBookRepository.save(book);
+        bookRatingService.createBookRating(saved);
         saveBookImage(saved.getId(), dto.getImage());
     }
 

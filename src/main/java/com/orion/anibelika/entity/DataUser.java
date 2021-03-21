@@ -1,15 +1,17 @@
 package com.orion.anibelika.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "data_user")
 public class DataUser {
@@ -31,4 +33,7 @@ public class DataUser {
 
     @OneToOne(mappedBy = "user")
     private AuthUser authUser;
+
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private BookRatingVote vote;
 }

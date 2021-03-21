@@ -1,8 +1,9 @@
 package com.orion.anibelika.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
@@ -11,7 +12,8 @@ import java.util.Set;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
+@Getter
+@Setter
 @Table(name = "books")
 public class AudioBook {
     @Id
@@ -34,6 +36,9 @@ public class AudioBook {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private DataUser user;
+
+    @OneToOne(mappedBy = "book")
+    private BookRating bookRating;
 
     @OneToMany(mappedBy = "book")
     private Set<Comment> comments;

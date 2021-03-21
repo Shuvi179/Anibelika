@@ -1,15 +1,17 @@
 package com.orion.anibelika.entity;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -52,6 +54,4 @@ public class Role implements GrantedAuthority {
     public int hashCode() {
         return Objects.hashCode(name);
     }
-
-
 }
