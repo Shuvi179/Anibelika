@@ -34,6 +34,17 @@ public class DataUser {
     @OneToOne(mappedBy = "user")
     private AuthUser authUser;
 
+    @ManyToMany
+    private Set<FavouriteBook> favouriteBooks;
+
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private BookRatingVote vote;
+
+    public void addFavouriteBook(FavouriteBook book) {
+        this.favouriteBooks.add(book);
+    }
+
+    public void removeFavouriteBook(FavouriteBook book) {
+        this.favouriteBooks.remove(book);
+    }
 }

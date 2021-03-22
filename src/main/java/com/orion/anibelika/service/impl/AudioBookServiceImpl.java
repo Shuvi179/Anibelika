@@ -103,7 +103,7 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Override
     @Transactional
     public PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage) {
-        Pageable request = PageRequest.of(pageNumber, numberOfElementsByPage);
+        Pageable request = PageRequest.of(pageNumber - 1, numberOfElementsByPage);
         List<AudioBook> result = audioBookRepository.findAll(request).getContent();
         return new PaginationAudioBookInfoDTO(mapper.mapAll(result));
     }

@@ -21,7 +21,7 @@ public class AudioBookController {
 
     private final AudioBookService audioBookService;
 
-    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 20;
+    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 10;
 
     public AudioBookController(AudioBookService audioBookService) {
         this.audioBookService = audioBookService;
@@ -33,10 +33,10 @@ public class AudioBookController {
         return new ResponseEntity<>(audioBookService.getBookById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/page")
+    @GetMapping(value = "/page/{pageId}")
     @Operation(summary = "Get page of books")
-    public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@RequestParam @Min(1) Integer pageNumber) {
-        return new ResponseEntity<>(audioBookService.getAudioBookPage(pageNumber, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
+    public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@PathVariable @Min(1) Integer pageId) {
+        return new ResponseEntity<>(audioBookService.getAudioBookPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
     }
 
     @PostMapping

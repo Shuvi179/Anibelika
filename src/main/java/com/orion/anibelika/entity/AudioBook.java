@@ -40,6 +40,9 @@ public class AudioBook {
     @OneToOne(mappedBy = "book")
     private BookRating bookRating;
 
+    @OneToOne(mappedBy = "book")
+    private FavouriteBook favouriteBook;
+
     @OneToMany(mappedBy = "book")
     private Set<Comment> comments;
 }
