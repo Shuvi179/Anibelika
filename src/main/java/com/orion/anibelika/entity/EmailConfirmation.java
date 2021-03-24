@@ -15,13 +15,14 @@ import javax.persistence.*;
 @Table(name = "email_confirmation")
 public class EmailConfirmation {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "confirmation_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
     private String uuid;
 
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name = "confirmation_id")
     private AuthUser user;
 }

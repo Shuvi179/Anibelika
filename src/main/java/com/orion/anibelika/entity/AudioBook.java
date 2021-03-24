@@ -37,11 +37,13 @@ public class AudioBook {
     @JoinColumn(name = "user_id", nullable = false)
     private DataUser user;
 
-    @OneToOne(mappedBy = "book")
+    @OneToOne(mappedBy = "book", optional = false)
+    @PrimaryKeyJoinColumn
     private BookRating bookRating;
 
-    @OneToOne(mappedBy = "book")
-    private FavouriteBook favouriteBook;
+    @Transient
+    @ManyToMany(mappedBy = "favouriteBooks")
+    private Set<DataUser> users;
 
     @OneToMany(mappedBy = "book")
     private Set<Comment> comments;

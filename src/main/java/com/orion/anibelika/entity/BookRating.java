@@ -16,7 +16,7 @@ import java.util.Set;
 @Table(name = "book_rating")
 public class BookRating {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "book_rating_id")
     private Long id;
 
     @Column
@@ -25,8 +25,9 @@ public class BookRating {
     @Column
     private Long numberOfVotes = 0L;
 
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name = "book_rating_id")
     private AudioBook book;
 
     @OneToMany(mappedBy = "bookRating")

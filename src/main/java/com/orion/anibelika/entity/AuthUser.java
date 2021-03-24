@@ -17,10 +17,9 @@ import java.util.Set;
 @Setter
 @Entity
 @Table(name = "auth_user")
-@Inheritance(strategy = InheritanceType.JOINED)
 public class AuthUser implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(name = "email", nullable = false, unique = true)
@@ -38,14 +37,17 @@ public class AuthUser implements UserDetails {
     @Column(nullable = false)
     private boolean confirmed;
 
-    @OneToOne(orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinColumn
+    @MapsId
+    @OneToOne(orphanRemoval = true, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
     private DataUser user;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
+    @PrimaryKeyJoinColumn
     private EmailConfirmation emailConfirmation;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
+    @PrimaryKeyJoinColumn
     private PasswordResetToken passwordResetToken;
 
     @ManyToMany(fetch = FetchType.EAGER)

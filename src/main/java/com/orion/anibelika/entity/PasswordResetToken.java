@@ -16,7 +16,7 @@ import java.util.Date;
 @Table(name = "password_reset_token")
 public class PasswordResetToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reset_token_id")
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -26,7 +26,8 @@ public class PasswordResetToken {
     @Temporal(TemporalType.TIMESTAMP)
     private Date expireTime;
 
+    @MapsId
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn
+    @JoinColumn(name = "reset_token_id")
     private AuthUser user;
 }

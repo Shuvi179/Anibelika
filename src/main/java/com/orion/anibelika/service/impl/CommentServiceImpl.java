@@ -39,7 +39,7 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public PaginationCommentDTO getCommentPageByBook(Long bookId, int pageNumber, int numberByPage) {
         AudioBook audioBook = audioBookService.getBookEntityById(bookId);
-        Pageable request = PageRequest.of(pageNumber, numberByPage, Sort.Direction.DESC, "createTime");
+        Pageable request = PageRequest.of(pageNumber - 1, numberByPage, Sort.Direction.DESC, "createTime");
         List<Comment> comments = commentRepository.findAllByBook(audioBook, request).getContent();
         return new PaginationCommentDTO(commentMapper.mapAll(comments));
     }

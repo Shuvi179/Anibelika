@@ -21,7 +21,7 @@ public class BookRatingVote {
     @Column
     private Long rating;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn
     private DataUser user;
 

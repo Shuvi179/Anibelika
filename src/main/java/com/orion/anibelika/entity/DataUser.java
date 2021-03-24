@@ -28,23 +28,24 @@ public class DataUser {
     @OneToMany(mappedBy = "user")
     private Set<Comment> comments;
 
-    @OneToMany
+    @OneToMany(mappedBy = "user")
     private Set<DonateRequisite> requisites;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
+    @PrimaryKeyJoinColumn
     private AuthUser authUser;
 
     @ManyToMany
-    private Set<FavouriteBook> favouriteBooks;
+    private Set<AudioBook> favouriteBooks;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private BookRatingVote vote;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<BookRatingVote> votes;
 
-    public void addFavouriteBook(FavouriteBook book) {
+    public void addFavouriteBook(AudioBook book) {
         this.favouriteBooks.add(book);
     }
 
-    public void removeFavouriteBook(FavouriteBook book) {
+    public void removeFavouriteBook(AudioBook book) {
         this.favouriteBooks.remove(book);
     }
 }

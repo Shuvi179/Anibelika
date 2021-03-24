@@ -3,10 +3,12 @@ package com.orion.anibelika.service.impl;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
+import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.image.ImageService;
 import com.orion.anibelika.mapper.BookMapper;
 import com.orion.anibelika.repository.AudioBookRepository;
+import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.service.BookRatingService;
 import com.orion.anibelika.service.UserHelper;
@@ -21,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-
 @Service
 public class AudioBookServiceImpl implements AudioBookService {
 
@@ -30,14 +31,17 @@ public class AudioBookServiceImpl implements AudioBookService {
     private final UserHelper userHelper;
     private final ImageService imageService;
     private final BookRatingService bookRatingService;
+    private final DataUserRepository dataUserRepository;
 
     public AudioBookServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
-                                UserHelper userHelper, ImageService imageService, BookRatingService bookRatingService) {
+                                UserHelper userHelper, ImageService imageService, BookRatingService bookRatingService,
+                                DataUserRepository dataUserRepository) {
         this.audioBookRepository = audioBookRepository;
         this.mapper = mapper;
         this.userHelper = userHelper;
         this.imageService = imageService;
         this.bookRatingService = bookRatingService;
+        this.dataUserRepository = dataUserRepository;
     }
 
     @Override
@@ -123,5 +127,30 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Override
     public byte[] getSmallBookImage(Long id) {
         return imageService.getSmallImage(URLPrefix.BOOK, id);
+    }
+
+    @Override
+    @Transactional
+    public void markBookAsFavourite(Long bookId) {
+        DataUser user = userHelper.getCurrentDataUser();
+        AudioBook book = validateGetById(bookId);
+        user.addFavouriteBook(book);
+        dataUserRepository.save(user);
+    }
+
+    @Override
+    @Transactional
+    public void unMarkBookAsFavourite(Long bookId) {
+        DataUser user = userHelper.getCurrentDataUser();
+        AudioBook book = validateGetById(bookId);
+        user.removeFavouriteBook(book);
+        dataUserRepository.save(user);
+    }
+
+    @Override
+    public PaginationAudioBookInfoDTO getFavouriteBooksByPage(Long userId, Integer pageNumber, Integer numberOfElements) {
+        Pageable request = PageRequest.of(pageNumber - 1, numberOfElements);
+        List<AudioBook> favouriteAudioBooks = audioBookRepository.findAllByUser(userId, request).getContent();
+        return new PaginationAudioBookInfoDTO(mapper.mapAll(favouriteAudioBooks));
     }
 }

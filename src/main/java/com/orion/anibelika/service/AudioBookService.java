@@ -22,4 +22,10 @@ public interface AudioBookService {
     byte[] getBookImage(Long id);
 
     byte[] getSmallBookImage(Long id);
+
+    void markBookAsFavourite(Long bookId);
+
+    void unMarkBookAsFavourite(Long bookId);
+
+    PaginationAudioBookInfoDTO getFavouriteBooksByPage(Long userId, Integer pageNumber, Integer numberOfElements);
 }
