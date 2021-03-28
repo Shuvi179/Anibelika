@@ -32,7 +32,7 @@ public class Comment {
     @JoinColumn(nullable = false)
     private AudioBook book;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private DataUser user;
 }

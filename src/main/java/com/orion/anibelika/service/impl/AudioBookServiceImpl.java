@@ -1,6 +1,7 @@
 package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
+import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.DataUser;
@@ -45,7 +46,7 @@ public class AudioBookServiceImpl implements AudioBookService {
     }
 
     @Override
-    public DefaultAudioBookInfoDTO getBookById(Long id) {
+    public FullAudioBookInfoDTO getBookById(Long id) {
         return mapper.map(validateGetById(id));
     }
 
@@ -102,6 +103,14 @@ public class AudioBookServiceImpl implements AudioBookService {
             throw new IllegalArgumentException("book id is incorrect: " + id);
         }
         return currentBook.get();
+    }
+
+    @Override
+    public void validateAudioAccess(Long audioId) {
+        DataUser user = userHelper.getCurrentDataUser();
+        if (audioBookRepository.countBookByUserAndAudio(audioId, user.getId()) <= 0) {
+            throw new PermissionException("No access to this data");
+        }
     }
 
     @Override

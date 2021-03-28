@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 public class DefaultAudioBookInfoDTO {
@@ -16,5 +17,6 @@ public class DefaultAudioBookInfoDTO {
     private String description;
     private byte[] image;
     private Long tome;
+    private List<String> genres;
     private Boolean createdByCurrentUser;
 }

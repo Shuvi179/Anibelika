@@ -27,4 +27,16 @@ public class AudioController {
     public ResponseEntity<Long> addNewAudio(@RequestBody @Valid AudioDTO audioDTO, @PathVariable @Min(1) Long bookId) {
         return new ResponseEntity<>(baseAudioService.addNewAudio(audioDTO, bookId), HttpStatus.OK);
     }
+
+    @PutMapping
+    @Operation(summary = "update audio placeholder")
+    public ResponseEntity<AudioDTO> updateAudio(@RequestBody @Valid AudioDTO audioDTO) {
+        return new ResponseEntity<>(baseAudioService.updateAudio(audioDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{audioId}")
+    @Operation(summary = "delete audio placeholder")
+    public void deleteAudio(@PathVariable Long audioId) {
+        baseAudioService.removeAudio(audioId);
+    }
 }

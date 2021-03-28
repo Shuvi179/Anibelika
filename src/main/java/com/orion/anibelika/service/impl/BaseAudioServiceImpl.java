@@ -27,4 +27,22 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         baseAudio.setBook(book);
         return baseAudioRepository.save(baseAudio).getId();
     }
+
+    @Override
+    public AudioDTO updateAudio(AudioDTO audioDTO) {
+        audioBookService.validateAudioAccess(audioDTO.getId());
+        BaseAudio audio = baseAudioRepository.getOne(audioDTO.getId());
+        audio.setName(audioDTO.getName());
+        return getDto(baseAudioRepository.save(audio));
+    }
+
+    @Override
+    public void removeAudio(Long audioId) {
+        audioBookService.validateAudioAccess(audioId);
+        baseAudioRepository.deleteById(audioId);
+    }
+
+    private AudioDTO getDto(BaseAudio audio) {
+        return new AudioDTO(audio.getId(), audio.getName());
+    }
 }

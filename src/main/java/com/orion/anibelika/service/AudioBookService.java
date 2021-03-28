@@ -1,11 +1,12 @@
 package com.orion.anibelika.service;
 
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
+import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 
 public interface AudioBookService {
-    DefaultAudioBookInfoDTO getBookById(Long id);
+    FullAudioBookInfoDTO getBookById(Long id);
 
     AudioBook getPermittedBookEntityById(Long id);
 
@@ -14,6 +15,8 @@ public interface AudioBookService {
     void addAudioBook(DefaultAudioBookInfoDTO dto);
 
     void updateAudioBook(DefaultAudioBookInfoDTO dto);
+
+    void validateAudioAccess(Long audioId);
 
     PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage);
 

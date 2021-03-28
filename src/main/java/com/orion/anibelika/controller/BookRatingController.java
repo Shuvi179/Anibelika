@@ -2,19 +2,16 @@ package com.orion.anibelika.controller;
 
 import com.orion.anibelika.dto.RatingDTO;
 import com.orion.anibelika.service.BookRatingService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 
-@Controller
+@RestController
 @Validated
 @RequestMapping(value = "/api/v1/book/{bookId}/rating")
 public class BookRatingController {
@@ -25,11 +22,13 @@ public class BookRatingController {
     }
 
     @GetMapping
+    @Operation(summary = "Get book rating")
     public ResponseEntity<RatingDTO> getBookRating(@PathVariable Long bookId) {
         return new ResponseEntity<>(bookRatingService.getRating(bookId), HttpStatus.OK);
     }
 
-    @PostMapping(value = "{rating}")
+    @PostMapping("/{rating}")
+    @Operation(summary = "Vote for Book")
     public ResponseEntity<RatingDTO> voteForBook(@PathVariable Long bookId, @PathVariable @Min(0) @Max(5) Long rating) {
         return new ResponseEntity<>(bookRatingService.voteForBook(bookId, rating), HttpStatus.OK);
     }

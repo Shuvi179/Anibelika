@@ -30,10 +30,13 @@ public class AudioBook {
     @Column
     private Long tome;
 
+    @Column(name = "genre_mask")
+    private String genreMask;
+
     @OneToMany(mappedBy = "book")
     private Set<BaseAudio> audios;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private DataUser user;
 

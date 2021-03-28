@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Setter
 public class BaseAudio {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 

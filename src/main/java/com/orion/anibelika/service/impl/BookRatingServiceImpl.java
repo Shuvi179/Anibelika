@@ -50,6 +50,9 @@ public class BookRatingServiceImpl implements BookRatingService {
     }
 
     private RatingDTO calculateRating(BookRating rating) {
+        if (rating.getNumberOfVotes() == 0L) {
+            return new RatingDTO(0., 0L);
+        }
         return new RatingDTO(rating.getRatingSum() * 1. / rating.getNumberOfVotes(), rating.getNumberOfVotes());
     }
 

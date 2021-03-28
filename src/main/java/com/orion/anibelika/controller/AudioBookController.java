@@ -1,6 +1,7 @@
 package com.orion.anibelika.controller;
 
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
+import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.service.AudioBookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,7 +30,7 @@ public class AudioBookController {
 
     @GetMapping(value = "/{id}")
     @Operation(summary = "Get book by id")
-    public ResponseEntity<DefaultAudioBookInfoDTO> getAudioBookById(@PathVariable @Min(1) Long id) {
+    public ResponseEntity<FullAudioBookInfoDTO> getAudioBookById(@PathVariable @Min(1) Long id) {
         return new ResponseEntity<>(audioBookService.getBookById(id), HttpStatus.OK);
     }
 

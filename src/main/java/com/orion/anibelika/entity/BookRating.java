@@ -26,7 +26,7 @@ public class BookRating {
     private Long numberOfVotes = 0L;
 
     @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "book_rating_id")
     private AudioBook book;
 
