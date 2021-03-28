@@ -46,6 +46,12 @@ public class UserController {
         userService.confirmUser(uuid);
     }
 
+    @GetMapping(value = "/current")
+    @Operation(summary = "Get current user")
+    public void getCurrentUser() {
+        userService.getCurrentUser();
+    }
+
     @GetMapping(value = "/{id}/image", produces = MediaType.IMAGE_JPEG_VALUE)
     @Operation(summary = "Get image for user by id")
     public byte[] getUserImage(@PathVariable @Min(1) Long id) {

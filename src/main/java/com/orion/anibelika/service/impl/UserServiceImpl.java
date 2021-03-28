@@ -93,6 +93,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.map(user);
     }
 
+    @Override
+    public UserDTO getCurrentUser() {
+        DataUser user = userHelper.getCurrentDataUser();
+        return userMapper.map(user);
+    }
+
     private DataUser validateDataUserId(Long id) {
         if (Objects.isNull(id) || id <= 0) {
             throw new IllegalArgumentException("DataUser id is incorrect: " + id);

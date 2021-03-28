@@ -13,4 +13,5 @@ public class AudioDTO {
     @NotNull
     @NotEmpty
     private String name;
+    private Long tomeNumber;
 }

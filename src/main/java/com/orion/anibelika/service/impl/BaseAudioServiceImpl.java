@@ -1,12 +1,17 @@
 package com.orion.anibelika.service.impl;
 
 import com.orion.anibelika.dto.AudioDTO;
+import com.orion.anibelika.dto.BookAudioDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.BaseAudio;
 import com.orion.anibelika.repository.BaseAudioRepository;
 import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.service.BaseAudioService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class BaseAudioServiceImpl implements BaseAudioService {
@@ -24,6 +29,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         AudioBook book = audioBookService.getPermittedBookEntityById(bookId);
         BaseAudio baseAudio = new BaseAudio();
         baseAudio.setName(audioDTO.getName());
+        baseAudio.setTomeNumber(audioDTO.getTomeNumber());
         baseAudio.setBook(book);
         return baseAudioRepository.save(baseAudio).getId();
     }
@@ -33,6 +39,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         audioBookService.validateAudioAccess(audioDTO.getId());
         BaseAudio audio = baseAudioRepository.getOne(audioDTO.getId());
         audio.setName(audioDTO.getName());
+        audio.setTomeNumber(audioDTO.getTomeNumber());
         return getDto(baseAudioRepository.save(audio));
     }
 
@@ -42,7 +49,15 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         baseAudioRepository.deleteById(audioId);
     }
 
+    @Override
+    public BookAudioDTO getAudioByBook(Long bookId) {
+        List<BaseAudio> audioList = baseAudioRepository.getAllByBookId(bookId);
+        Map<Long, List<AudioDTO>> audioMap = audioList.stream()
+                .collect(Collectors.groupingBy(BaseAudio::getTomeNumber, Collectors.mapping(this::getDto, Collectors.toList())));
+        return new BookAudioDTO(audioMap);
+    }
+
     private AudioDTO getDto(BaseAudio audio) {
-        return new AudioDTO(audio.getId(), audio.getName());
+        return new AudioDTO(audio.getId(), audio.getName(), audio.getTomeNumber());
     }
 }

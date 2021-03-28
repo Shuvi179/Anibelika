@@ -11,6 +11,8 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ParseServiceImpl implements ParseService {
@@ -19,6 +21,7 @@ public class ParseServiceImpl implements ParseService {
 
     private static final String PARSE_URL_IMAGE_QUERY_SELECTOR = ".c-poster";
     private static final String PARSE_DESCRIPTION_QUERY_SELECTOR = ".b-text_with_paragraphs";
+    private static final String PARSE_GENRE_QUERY_SELECTOR = ".genre-ru";
 
     public ParseServiceImpl(WebImageProvider webImageProvider) {
         this.webImageProvider = webImageProvider;
@@ -32,6 +35,7 @@ public class ParseServiceImpl implements ParseService {
             dto.setImage(webImageProvider.getImage(parseImageURL(page)));
             dto.setName(getName(page).trim());
             dto.setDescription(getDescription(page));
+            dto.setGenres(getGenres(page));
             dto.setCreatedByCurrentUser(false);
             dto.setTome(0L);
         } catch (IOException e) {
@@ -55,6 +59,12 @@ public class ParseServiceImpl implements ParseService {
         StringBuilder result = new StringBuilder();
         parseDFS(descriptionToParse, result);
         return result.toString();
+    }
+
+    private List<String> getGenres(Document document) {
+        return document.select(PARSE_GENRE_QUERY_SELECTOR).stream()
+                .map(element -> ((TextNode) element.childNode(0)).text())
+                .collect(Collectors.toList());
     }
 
     private void parseDFS(Node currentNode, StringBuilder builder) {

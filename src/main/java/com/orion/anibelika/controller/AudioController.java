@@ -1,6 +1,7 @@
 package com.orion.anibelika.controller;
 
 import com.orion.anibelika.dto.AudioDTO;
+import com.orion.anibelika.dto.BookAudioDTO;
 import com.orion.anibelika.service.BaseAudioService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
@@ -29,14 +30,20 @@ public class AudioController {
     }
 
     @PutMapping
-    @Operation(summary = "update audio placeholder")
+    @Operation(summary = "Update audio placeholder")
     public ResponseEntity<AudioDTO> updateAudio(@RequestBody @Valid AudioDTO audioDTO) {
         return new ResponseEntity<>(baseAudioService.updateAudio(audioDTO), HttpStatus.OK);
     }
 
     @DeleteMapping("/{audioId}")
-    @Operation(summary = "delete audio placeholder")
+    @Operation(summary = "Delete audio placeholder")
     public void deleteAudio(@PathVariable Long audioId) {
         baseAudioService.removeAudio(audioId);
+    }
+
+    @GetMapping
+    @Operation(summary = "Get audios by book")
+    public ResponseEntity<BookAudioDTO> getAudioByBook(@PathVariable @Min(1) Long bookId) {
+        return new ResponseEntity<>(baseAudioService.getAudioByBook(bookId), HttpStatus.OK);
     }
 }

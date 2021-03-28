@@ -12,6 +12,8 @@ public interface UserService extends UserDetailsService {
 
     UserDTO getUserDataById(Long id);
 
+    UserDTO getCurrentUser();
+
     void confirmUser(String uuid);
 
     void saveUserImage(Long id, byte[] image);

@@ -20,6 +20,7 @@ public class BaseAudio {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    private Long tomeNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
