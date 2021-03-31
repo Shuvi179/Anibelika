@@ -1,5 +1,6 @@
 package com.orion.anibelika.service;
 
+import com.orion.anibelika.dto.AudioBookFilterDTO;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
@@ -18,7 +19,7 @@ public interface AudioBookService {
 
     void validateAudioAccess(Long audioId);
 
-    PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage);
+    PaginationAudioBookInfoDTO getAudioBookPage(AudioBookFilterDTO dto, Integer pageNumber, Integer numberOfElementsByPage);
 
     void saveBookImage(Long id, byte[] image);
 

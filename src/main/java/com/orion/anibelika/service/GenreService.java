@@ -10,5 +10,7 @@ public interface GenreService {
 
     Set<Genre> getAllByNames(List<String> names);
 
+    List<Long> getIds(List<String> names);
+
     List<String> getAllNames(Set<Genre> genres);
 }

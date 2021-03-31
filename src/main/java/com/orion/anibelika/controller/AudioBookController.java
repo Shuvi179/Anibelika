@@ -1,5 +1,6 @@
 package com.orion.anibelika.controller;
 
+import com.orion.anibelika.dto.AudioBookFilterDTO;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
@@ -34,10 +35,10 @@ public class AudioBookController {
         return new ResponseEntity<>(audioBookService.getBookById(id), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/page/{pageId}")
+    @PostMapping(value = "/page/{pageId}")
     @Operation(summary = "Get page of books")
-    public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@PathVariable @Min(1) Integer pageId) {
-        return new ResponseEntity<>(audioBookService.getAudioBookPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
+    public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@RequestBody AudioBookFilterDTO filterDTO, @PathVariable @Min(1) Integer pageId) {
+        return new ResponseEntity<>(audioBookService.getAudioBookPage(filterDTO, pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
     }
 
     @PostMapping

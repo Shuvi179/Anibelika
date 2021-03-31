@@ -1,5 +1,6 @@
 package com.orion.anibelika.service.impl;
 
+import com.orion.anibelika.dto.AudioBookFilterDTO;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
@@ -18,15 +19,17 @@ import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.url.URLPrefix;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class AudioBookServiceImpl implements AudioBookService {
@@ -38,6 +41,9 @@ public class AudioBookServiceImpl implements AudioBookService {
     private final BookRatingService bookRatingService;
     private final DataUserRepository dataUserRepository;
     private final GenreService genreService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public AudioBookServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
                                 UserHelper userHelper, ImageService imageService, BookRatingService bookRatingService,
@@ -129,10 +135,44 @@ public class AudioBookServiceImpl implements AudioBookService {
 
     @Override
     @Transactional
-    public PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage) {
-        Pageable request = PageRequest.of(pageNumber - 1, numberOfElementsByPage, Sort.by("bookRating.rating").descending());
-        List<AudioBook> result = audioBookRepository.findAll(request).getContent();
+    public PaginationAudioBookInfoDTO getAudioBookPage(AudioBookFilterDTO dto, Integer pageNumber, Integer numberOfElementsByPage) {
+        List<AudioBook> result = getAudioPageWithFilter(dto, pageNumber, numberOfElementsByPage);
         return new PaginationAudioBookInfoDTO(mapper.mapAll(result));
+    }
+
+    private List<AudioBook> getAudioPageWithFilter(AudioBookFilterDTO filterDTO, Integer pageNumber, Integer numberOfElementsByPage) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        CriteriaQuery<AudioBook> query = cb.createQuery(AudioBook.class);
+        Root<AudioBook> book = query.from(AudioBook.class);
+        book.fetch("user", JoinType.INNER);
+        book.fetch("bookRating", JoinType.INNER);
+        book.fetch("genres", JoinType.LEFT);
+        List<Predicate> predicates = new ArrayList<>();
+        if (Objects.nonNull(filterDTO.getAuthorId())) {
+            predicates.add(cb.equal(book.get("user").get("id"), filterDTO.getAuthorId()));
+        }
+        if (!CollectionUtils.isEmpty(filterDTO.getGenres())) {
+            List<Long> genreIds = genreService.getIds(filterDTO.getGenres());
+            List<Long> validBookList = audioBookRepository.filterBooksByGenre(genreIds, genreIds.size());
+            if (CollectionUtils.isEmpty(validBookList)) {
+                return Collections.emptyList();
+            }
+            predicates.add(book.get("id").in(validBookList));
+        }
+        if (!StringUtils.isEmpty(filterDTO.getBookName())) {
+            predicates.add(cb.like(book.get("name"), "%" + filterDTO.getBookName().toLowerCase() + "%"));
+        }
+        if (Objects.nonNull(filterDTO.getSortBy()) && filterDTO.getSortBy() == 1L) {
+            query.orderBy(cb.desc(book.get("name")));
+        } else {
+            query.orderBy(cb.desc(book.get("bookRating").get("rating")));
+        }
+        query.where(cb.and(predicates.toArray(new Predicate[0])));
+        TypedQuery<AudioBook> resultQuery = entityManager.createQuery(query);
+        resultQuery.setFirstResult((pageNumber - 1) * numberOfElementsByPage);
+        resultQuery.setMaxResults(numberOfElementsByPage);
+        return resultQuery.getResultList();
     }
 
     @Override

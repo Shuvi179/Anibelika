@@ -56,10 +56,14 @@ public class GenreStorage implements GenreService {
 
     @Override
     public Set<Genre> getAllByNames(List<String> names) {
-        List<Long> ids = names.stream()
+        return genreRepository.getAllByIdIsIn(getIds(names));
+    }
+
+    @Override
+    public List<Long> getIds(List<String> names) {
+        return names.stream()
                 .map(name -> this.getByName(name).getId())
                 .collect(Collectors.toList());
-        return genreRepository.getAllByIdIsIn(ids);
     }
 
     @Override
