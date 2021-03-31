@@ -4,9 +4,8 @@ import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.RatingDTO;
 import com.orion.anibelika.entity.AudioBook;
-import com.orion.anibelika.entity.BookRating;
 import com.orion.anibelika.entity.DataUser;
-import com.orion.anibelika.entity.Genre;
+import com.orion.anibelika.service.GenreService;
 import com.orion.anibelika.service.UserHelper;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +18,11 @@ import java.util.stream.Collectors;
 public class BookMapper {
 
     private final UserHelper userHelper;
-    private final Genre[] genres = Genre.values();
+    private final GenreService genreService;
 
-    public BookMapper(UserHelper userHelper) {
+    public BookMapper(UserHelper userHelper, GenreService genreService) {
         this.userHelper = userHelper;
+        this.genreService = genreService;
     }
 
     public FullAudioBookInfoDTO map(AudioBook audioBook) {
@@ -31,11 +31,11 @@ public class BookMapper {
 
     public AudioBook map(DefaultAudioBookInfoDTO dto) {
         AudioBook book = new AudioBook();
+        book.setId(dto.getId());
         book.setName(dto.getName());
         book.setDescription(dto.getDescription());
         book.setTome(dto.getTome());
         book.setUser(userHelper.getCurrentDataUser());
-        book.setGenreMask(Genre.getGenreMask(dto.getGenres(), genres));
         return book;
     }
 
@@ -48,15 +48,8 @@ public class BookMapper {
 
     private FullAudioBookInfoDTO getFullInfoDto(AudioBook audioBook, Predicate<AudioBook> createdByUser) {
         DefaultAudioBookInfoDTO defaultInfo = getDefaultDto(audioBook, createdByUser);
-        RatingDTO rating = calculateRating(audioBook.getBookRating());
+        RatingDTO rating = new RatingDTO(audioBook.getBookRating().getRating(), audioBook.getBookRating().getNumberOfVotes());
         return new FullAudioBookInfoDTO(defaultInfo, rating);
-    }
-
-    private RatingDTO calculateRating(BookRating rating) {
-        if (rating.getNumberOfVotes() == 0L) {
-            return new RatingDTO(0., 0L);
-        }
-        return new RatingDTO(rating.getRatingSum() * 1. / rating.getNumberOfVotes(), rating.getNumberOfVotes());
     }
 
     private DefaultAudioBookInfoDTO getDefaultDto(AudioBook audioBook, Predicate<AudioBook> createdByUser) {
@@ -66,7 +59,7 @@ public class BookMapper {
         dto.setName(audioBook.getName());
         dto.setDescription(audioBook.getDescription());
         dto.setCreatedByCurrentUser(createdByUser.test(audioBook));
-        dto.setGenres(Genre.getGenresFromMask(audioBook.getGenreMask(), genres));
+        dto.setGenres(genreService.getAllNames(audioBook.getGenres()));
         return dto;
     }
 

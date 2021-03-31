@@ -5,6 +5,7 @@ import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.DataUser;
+import com.orion.anibelika.entity.Genre;
 import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.image.ImageService;
 import com.orion.anibelika.mapper.BookMapper;
@@ -12,10 +13,12 @@ import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.repository.DataUserRepository;
 import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.service.BookRatingService;
+import com.orion.anibelika.service.GenreService;
 import com.orion.anibelika.service.UserHelper;
 import com.orion.anibelika.url.URLPrefix;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,6 +26,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AudioBookServiceImpl implements AudioBookService {
@@ -33,16 +37,18 @@ public class AudioBookServiceImpl implements AudioBookService {
     private final ImageService imageService;
     private final BookRatingService bookRatingService;
     private final DataUserRepository dataUserRepository;
+    private final GenreService genreService;
 
     public AudioBookServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
                                 UserHelper userHelper, ImageService imageService, BookRatingService bookRatingService,
-                                DataUserRepository dataUserRepository) {
+                                DataUserRepository dataUserRepository, GenreService genreService) {
         this.audioBookRepository = audioBookRepository;
         this.mapper = mapper;
         this.userHelper = userHelper;
         this.imageService = imageService;
         this.bookRatingService = bookRatingService;
         this.dataUserRepository = dataUserRepository;
+        this.genreService = genreService;
     }
 
     @Override
@@ -65,8 +71,15 @@ public class AudioBookServiceImpl implements AudioBookService {
     public void addAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook book = validateAddBook(dto);
         AudioBook saved = audioBookRepository.save(book);
+        saved = addGenresToBook(saved, dto.getGenres());
         bookRatingService.createBookRating(saved);
         saveBookImage(saved.getId(), dto.getImage());
+    }
+
+    private AudioBook addGenresToBook(AudioBook book, List<String> genres) {
+        Set<Genre> currentGenres = genreService.getAllByNames(genres);
+        book.setGenres(currentGenres);
+        return audioBookRepository.save(book);
     }
 
     private AudioBook validateAddBook(@NotNull DefaultAudioBookInfoDTO dto) {
@@ -83,7 +96,8 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Transactional
     public void updateAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook newBook = mapper.map(dto);
-        audioBookRepository.save(newBook);
+        AudioBook saved = audioBookRepository.save(newBook);
+        addGenresToBook(saved, dto.getGenres());
     }
 
     private AudioBook validateBookById(Long id) {
@@ -116,7 +130,7 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Override
     @Transactional
     public PaginationAudioBookInfoDTO getAudioBookPage(Integer pageNumber, Integer numberOfElementsByPage) {
-        Pageable request = PageRequest.of(pageNumber - 1, numberOfElementsByPage);
+        Pageable request = PageRequest.of(pageNumber - 1, numberOfElementsByPage, Sort.by("bookRating.rating").descending());
         List<AudioBook> result = audioBookRepository.findAll(request).getContent();
         return new PaginationAudioBookInfoDTO(mapper.mapAll(result));
     }

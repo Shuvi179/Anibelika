@@ -30,9 +30,6 @@ public class AudioBook {
     @Column
     private Long tome;
 
-    @Column(name = "genre_mask")
-    private String genreMask;
-
     @OneToMany(mappedBy = "book")
     private Set<BaseAudio> audios;
 
@@ -47,6 +44,9 @@ public class AudioBook {
     @Transient
     @ManyToMany(mappedBy = "favouriteBooks")
     private Set<DataUser> users;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Genre> genres;
 
     @OneToMany(mappedBy = "book")
     private Set<Comment> comments;

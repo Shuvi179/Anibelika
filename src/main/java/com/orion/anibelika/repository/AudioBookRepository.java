@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
     @Override
-    @Query(value = "select b from AudioBook as b join fetch b.bookRating join fetch b.user",
+    @Query(value = "select b from AudioBook as b join fetch b.bookRating join fetch b.user left join fetch b.genres",
             countQuery = "select count(b) from AudioBook as b")
     Page<AudioBook> findAll(Pageable pageable);
 

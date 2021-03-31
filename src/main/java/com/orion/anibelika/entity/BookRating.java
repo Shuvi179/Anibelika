@@ -25,6 +25,9 @@ public class BookRating {
     @Column
     private Long numberOfVotes = 0L;
 
+    @Column
+    private Double rating = 0.;
+
     @MapsId
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "book_rating_id")

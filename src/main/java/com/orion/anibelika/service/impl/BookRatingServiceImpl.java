@@ -39,7 +39,7 @@ public class BookRatingServiceImpl implements BookRatingService {
 
     @Override
     public RatingDTO getRating(Long bookId) {
-        return calculateRating(validateRating(bookId));
+        return getDto(validateRating(bookId));
     }
 
     @Override
@@ -49,11 +49,11 @@ public class BookRatingServiceImpl implements BookRatingService {
         bookRatingRepository.save(rating);
     }
 
-    private RatingDTO calculateRating(BookRating rating) {
+    private Double calculateRating(BookRating rating) {
         if (rating.getNumberOfVotes() == 0L) {
-            return new RatingDTO(0., 0L);
+            return 0.;
         }
-        return new RatingDTO(rating.getRatingSum() * 1. / rating.getNumberOfVotes(), rating.getNumberOfVotes());
+        return rating.getRatingSum() * 1. / rating.getNumberOfVotes();
     }
 
     private RatingDTO updateVote(BookRatingVote vote, Long rating, BookRating bookRating) {
@@ -75,7 +75,8 @@ public class BookRatingServiceImpl implements BookRatingService {
     private RatingDTO updateBookRating(BookRating bookRating, Long ratingDelta, Long userDelta) {
         bookRating.setRatingSum(bookRating.getRatingSum() + ratingDelta);
         bookRating.setNumberOfVotes(bookRating.getNumberOfVotes() + userDelta);
-        return calculateRating(bookRatingRepository.save(bookRating));
+        bookRating.setRating(calculateRating(bookRating));
+        return getDto(bookRatingRepository.save(bookRating));
     }
 
     private BookRating validateRating(Long bookId) {
@@ -84,5 +85,9 @@ public class BookRatingServiceImpl implements BookRatingService {
             throw new PermissionException("No book with id: " + bookId);
         }
         return rating;
+    }
+
+    private RatingDTO getDto(BookRating rating) {
+        return new RatingDTO(rating.getRating(), rating.getNumberOfVotes());
     }
 }
