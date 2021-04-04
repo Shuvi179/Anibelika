@@ -11,13 +11,13 @@ import com.orion.anibelika.repository.CommentRepository;
 import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.service.CommentService;
 import com.orion.anibelika.service.UserHelper;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.List;
 
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -40,8 +40,8 @@ public class CommentServiceImpl implements CommentService {
     public PaginationCommentDTO getCommentPageByBook(Long bookId, int pageNumber, int numberByPage) {
         AudioBook audioBook = audioBookService.getBookEntityById(bookId);
         Pageable request = PageRequest.of(pageNumber - 1, numberByPage, Sort.Direction.DESC, "createTime");
-        List<Comment> comments = commentRepository.findAllByBook(audioBook, request).getContent();
-        return new PaginationCommentDTO(commentMapper.mapAll(comments));
+        Page<Comment> comments = commentRepository.findAllByBook(audioBook, request);
+        return new PaginationCommentDTO(commentMapper.mapAll(comments.getContent()), comments.getTotalPages(), comments.getTotalElements());
     }
 
     @Override

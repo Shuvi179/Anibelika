@@ -2,6 +2,7 @@ package com.orion.anibelika.service.impl.login;
 
 import com.orion.anibelika.dto.CustomUserInfoDTO;
 import com.orion.anibelika.entity.AuthUser;
+import com.orion.anibelika.exception.CustomUserLoginException;
 import com.orion.anibelika.exception.PermissionException;
 import com.orion.anibelika.repository.UserRepository;
 import com.orion.anibelika.security.CustomAuthenticationProvider;
@@ -35,6 +36,9 @@ public class CustomLoginServiceImpl implements CustomLoginService {
         AuthUser currentUser = userRepository.findUserByIdentificationNameAndType(socialId, clientID);
         if (Objects.isNull(currentUser)) {
             return buildNewUser(attributes, params);
+        }
+        if (!currentUser.isEnabled()) {
+            throw new CustomUserLoginException("User is enabled");
         }
         customAuthenticationProvider.trust(currentUser);
         return null;

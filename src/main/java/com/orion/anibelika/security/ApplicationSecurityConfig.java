@@ -42,7 +42,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/*", "/js/*").permitAll()
                 //.antMatchers(servletPath + "/book/*").authenticated()
                 .anyRequest().permitAll()
-                .and().formLogin()
+                .and().formLogin().failureHandler(new CustomAuthenticationFailureHandler())
                 .and().oauth2Login().defaultSuccessUrl(servletPath + "/oauth2Login");
     }
 }

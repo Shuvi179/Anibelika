@@ -12,11 +12,10 @@ import com.orion.anibelika.image.ImageService;
 import com.orion.anibelika.mapper.BookMapper;
 import com.orion.anibelika.repository.AudioBookRepository;
 import com.orion.anibelika.repository.DataUserRepository;
-import com.orion.anibelika.service.AudioBookService;
-import com.orion.anibelika.service.BookRatingService;
-import com.orion.anibelika.service.GenreService;
-import com.orion.anibelika.service.UserHelper;
+import com.orion.anibelika.service.*;
 import com.orion.anibelika.url.URLPrefix;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -41,13 +40,14 @@ public class AudioBookServiceImpl implements AudioBookService {
     private final BookRatingService bookRatingService;
     private final DataUserRepository dataUserRepository;
     private final GenreService genreService;
+    private final BookHistoryService bookHistoryService;
 
     @PersistenceContext
     private EntityManager entityManager;
 
     public AudioBookServiceImpl(AudioBookRepository audioBookRepository, BookMapper mapper,
                                 UserHelper userHelper, ImageService imageService, BookRatingService bookRatingService,
-                                DataUserRepository dataUserRepository, GenreService genreService) {
+                                DataUserRepository dataUserRepository, GenreService genreService, BookHistoryService bookHistoryService) {
         this.audioBookRepository = audioBookRepository;
         this.mapper = mapper;
         this.userHelper = userHelper;
@@ -55,11 +55,14 @@ public class AudioBookServiceImpl implements AudioBookService {
         this.bookRatingService = bookRatingService;
         this.dataUserRepository = dataUserRepository;
         this.genreService = genreService;
+        this.bookHistoryService = bookHistoryService;
     }
 
     @Override
     public FullAudioBookInfoDTO getBookById(Long id) {
-        return mapper.map(validateGetById(id));
+        AudioBook book = validateGetById(id);
+        bookHistoryService.updateUserHistory(book);
+        return mapper.map(book);
     }
 
     @Override
@@ -77,7 +80,9 @@ public class AudioBookServiceImpl implements AudioBookService {
     public void addAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook book = validateAddBook(dto);
         AudioBook saved = audioBookRepository.save(book);
-        saved = addGenresToBook(saved, dto.getGenres());
+        if (!CollectionUtils.isEmpty(dto.getGenres())) {
+            saved = addGenresToBook(saved, dto.getGenres());
+        }
         bookRatingService.createBookRating(saved);
         saveBookImage(saved.getId(), dto.getImage());
     }
@@ -136,18 +141,15 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Override
     @Transactional
     public PaginationAudioBookInfoDTO getAudioBookPage(AudioBookFilterDTO dto, Integer pageNumber, Integer numberOfElementsByPage) {
-        List<AudioBook> result = getAudioPageWithFilter(dto, pageNumber, numberOfElementsByPage);
-        return new PaginationAudioBookInfoDTO(mapper.mapAll(result));
+        Page<AudioBook> result = getAudioPageWithFilter(dto, pageNumber, numberOfElementsByPage);
+        return new PaginationAudioBookInfoDTO(mapper.mapAll(result.getContent()), result.getTotalPages(), result.getTotalElements());
     }
 
-    private List<AudioBook> getAudioPageWithFilter(AudioBookFilterDTO filterDTO, Integer pageNumber, Integer numberOfElementsByPage) {
+    private Page<AudioBook> getAudioPageWithFilter(AudioBookFilterDTO filterDTO, Integer pageNumber, Integer numberOfElementsByPage) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         CriteriaQuery<AudioBook> query = cb.createQuery(AudioBook.class);
-        Root<AudioBook> book = query.from(AudioBook.class);
-        book.fetch("user", JoinType.INNER);
-        book.fetch("bookRating", JoinType.INNER);
-        book.fetch("genres", JoinType.LEFT);
+        Root<AudioBook> book = getFilterQueryRoot(query);
         List<Predicate> predicates = new ArrayList<>();
         if (Objects.nonNull(filterDTO.getAuthorId())) {
             predicates.add(cb.equal(book.get("user").get("id"), filterDTO.getAuthorId()));
@@ -156,7 +158,7 @@ public class AudioBookServiceImpl implements AudioBookService {
             List<Long> genreIds = genreService.getIds(filterDTO.getGenres());
             List<Long> validBookList = audioBookRepository.filterBooksByGenre(genreIds, genreIds.size());
             if (CollectionUtils.isEmpty(validBookList)) {
-                return Collections.emptyList();
+                return new PageImpl<>(Collections.emptyList());
             }
             predicates.add(book.get("id").in(validBookList));
         }
@@ -164,7 +166,7 @@ public class AudioBookServiceImpl implements AudioBookService {
             predicates.add(cb.like(book.get("name"), "%" + filterDTO.getBookName().toLowerCase() + "%"));
         }
         if (Objects.nonNull(filterDTO.getSortBy()) && filterDTO.getSortBy() == 1L) {
-            query.orderBy(cb.desc(book.get("name")));
+            query.orderBy(cb.desc(book.get("lastUpdate")));
         } else {
             query.orderBy(cb.desc(book.get("bookRating").get("rating")));
         }
@@ -172,8 +174,29 @@ public class AudioBookServiceImpl implements AudioBookService {
         TypedQuery<AudioBook> resultQuery = entityManager.createQuery(query);
         resultQuery.setFirstResult((pageNumber - 1) * numberOfElementsByPage);
         resultQuery.setMaxResults(numberOfElementsByPage);
-        return resultQuery.getResultList();
+
+        CriteriaQuery<Long> count = cb.createQuery(Long.class);
+        Root<AudioBook> countRoot = getFilterCountQueryRoot(count);
+        count.select(cb.countDistinct(countRoot)).where(cb.and(predicates.toArray(new Predicate[0])));
+        Long haveBooks = entityManager.createQuery(count).getSingleResult();
+        return new PageImpl<>(resultQuery.getResultList(), PageRequest.of(pageNumber - 1, numberOfElementsByPage), haveBooks);
     }
+
+    private Root<AudioBook> getFilterQueryRoot(CriteriaQuery<?> query) {
+        Root<AudioBook> book = query.from(AudioBook.class);
+        book.fetch("user", JoinType.INNER);
+        book.fetch("bookRating", JoinType.INNER);
+        book.fetch("genres", JoinType.LEFT);
+        return book;
+    }
+
+    private Root<AudioBook> getFilterCountQueryRoot(CriteriaQuery<?> query) {
+        Root<AudioBook> book = query.from(AudioBook.class);
+        book.join("user", JoinType.INNER);
+        book.join("genres", JoinType.LEFT);
+        return book;
+    }
+
 
     @Override
     public void saveBookImage(Long id, byte[] image) {
@@ -213,7 +236,15 @@ public class AudioBookServiceImpl implements AudioBookService {
     @Override
     public PaginationAudioBookInfoDTO getFavouriteBooksByPage(Long userId, Integer pageNumber, Integer numberOfElements) {
         Pageable request = PageRequest.of(pageNumber - 1, numberOfElements);
-        List<AudioBook> favouriteAudioBooks = audioBookRepository.findAllByUser(userId, request).getContent();
-        return new PaginationAudioBookInfoDTO(mapper.mapAll(favouriteAudioBooks));
+        Page<AudioBook> favouriteAudioBooks = audioBookRepository.findAllByUser(userId, request);
+        return new PaginationAudioBookInfoDTO(mapper.mapAll(favouriteAudioBooks.getContent()), favouriteAudioBooks.getTotalPages(), favouriteAudioBooks.getTotalElements());
+    }
+
+    @Override
+    public PaginationAudioBookInfoDTO getBooksHistoryByPage(Integer pageNumber, Integer numberOfElements) {
+        DataUser user = userHelper.getCurrentDataUser();
+        Pageable request = PageRequest.of(pageNumber - 1, numberOfElements);
+        Page<AudioBook> lastViewedBooks = audioBookRepository.findAudioInHistory(user, request);
+        return new PaginationAudioBookInfoDTO(mapper.mapAll(lastViewedBooks.getContent()), lastViewedBooks.getTotalPages(), lastViewedBooks.getTotalElements());
     }
 }

@@ -8,4 +8,6 @@ public interface RegistrationService {
     UserDTO registerUser(RegisterUserDTO dto);
 
     UserDTO registerUser(CustomUserInfoDTO dto);
+
+    void resendEmailMessage(String email);
 }

@@ -1,6 +1,7 @@
 package com.orion.anibelika.repository;
 
 import com.orion.anibelika.entity.AudioBook;
+import com.orion.anibelika.entity.DataUser;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,6 +18,11 @@ public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
     @Query(value = "select b from DataUser as u join u.audioBooks b join fetch b.bookRating br where u.id = ?1",
             countQuery = "select size(u.audioBooks) from DataUser as u where u.id = ?1")
     Page<AudioBook> findAllByUser(Long userId, Pageable pageable);
+
+    @Query(value = "select b from AudioBook as b join fetch b.bookRating join fetch b.user left join fetch b.genres join b.bookHistory as h " +
+            "where h.user = ?1 order by h.lastVisit desc ",
+            countQuery = "select count(bhe.book) from BookHistoryEntity bhe where bhe.user = ?1")
+    Page<AudioBook> findAudioInHistory(DataUser user, Pageable pageable);
 
     @Query(value = "select count(b) from AudioBook as b join b.user as u join b.audios as a where a.id = ?1 and u.id = ?2")
     Integer countBookByUserAndAudio(Long audioId, Long userId);

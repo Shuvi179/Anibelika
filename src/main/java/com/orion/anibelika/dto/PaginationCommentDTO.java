@@ -9,4 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PaginationCommentDTO {
     private List<CommentDTO> comments;
+    private long numberOfPages;
+    private long numberOfComments;
 }

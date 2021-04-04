@@ -9,6 +9,7 @@ import com.orion.anibelika.service.AudioBookService;
 import com.orion.anibelika.service.BaseAudioService;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
     @Override
     public Long addNewAudio(AudioDTO audioDTO, Long bookId) {
         AudioBook book = audioBookService.getPermittedBookEntityById(bookId);
+        book.setLastUpdate(new Date());
         BaseAudio baseAudio = new BaseAudio();
         baseAudio.setName(audioDTO.getName());
         baseAudio.setTomeNumber(audioDTO.getTomeNumber());

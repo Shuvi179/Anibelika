@@ -32,4 +32,6 @@ public interface AudioBookService {
     void unMarkBookAsFavourite(Long bookId);
 
     PaginationAudioBookInfoDTO getFavouriteBooksByPage(Long userId, Integer pageNumber, Integer numberOfElements);
+
+    PaginationAudioBookInfoDTO getBooksHistoryByPage(Integer pageNumber, Integer numberOfElements);
 }

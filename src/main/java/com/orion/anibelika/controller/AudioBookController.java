@@ -41,6 +41,12 @@ public class AudioBookController {
         return new ResponseEntity<>(audioBookService.getAudioBookPage(filterDTO, pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
     }
 
+    @GetMapping(value = "/history/page/{pageId}")
+    @Operation(summary = "Get page of last viewed books")
+    public ResponseEntity<PaginationAudioBookInfoDTO> getLastViewedBooksForPage(@PathVariable @Min(1) Integer pageId) {
+        return new ResponseEntity<>(audioBookService.getBooksHistoryByPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
+    }
+
     @PostMapping
     @Operation(summary = "Add new book")
     public void addNewAudioBook(@RequestBody @Validated DefaultAudioBookInfoDTO dto) {

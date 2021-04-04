@@ -9,6 +9,7 @@ import com.orion.anibelika.service.GenreService;
 import com.orion.anibelika.service.UserHelper;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -35,6 +36,7 @@ public class BookMapper {
         book.setName(dto.getName());
         book.setDescription(dto.getDescription());
         book.setTome(dto.getTome());
+        book.setLastUpdate(new Date());
         book.setUser(userHelper.getCurrentDataUser());
         return book;
     }

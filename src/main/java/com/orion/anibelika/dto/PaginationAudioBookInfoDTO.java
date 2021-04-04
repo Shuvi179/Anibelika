@@ -9,4 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class PaginationAudioBookInfoDTO {
     private List<FullAudioBookInfoDTO> audioBooks;
+    private long numberOfPages;
+    private long numberOfBooks;
 }

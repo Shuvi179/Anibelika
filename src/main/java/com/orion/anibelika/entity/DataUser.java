@@ -26,6 +26,9 @@ public class DataUser {
     private Set<AudioBook> audioBooks;
 
     @OneToMany(mappedBy = "user")
+    private Set<BookHistoryEntity> bookHistory;
+
+    @OneToMany(mappedBy = "user")
     private Set<Comment> comments;
 
     @OneToMany(mappedBy = "user")

@@ -48,8 +48,8 @@ public class UserController {
 
     @GetMapping(value = "/current")
     @Operation(summary = "Get current user")
-    public void getCurrentUser() {
-        userService.getCurrentUser();
+    public ResponseEntity<UserDTO> getCurrentUser() {
+        return new ResponseEntity<>(userService.getCurrentUser(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/{id}/image", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -80,6 +80,12 @@ public class UserController {
     @Operation(summary = "Reset user password")
     public void resetUserPassword(@RequestParam String uuid, @RequestBody @Valid PasswordResetDTO dto) {
         userService.resetUserPassword(uuid, dto);
+    }
+
+    @PostMapping(value = "/resend/{email}")
+    @Operation(summary = "Resend email message")
+    public void resetUserPassword(@PathVariable String email) {
+        registrationService.resendEmailMessage(email);
     }
 
     @PutMapping(value = "/password")

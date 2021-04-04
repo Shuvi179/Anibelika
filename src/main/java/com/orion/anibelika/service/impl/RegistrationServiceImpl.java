@@ -9,6 +9,7 @@ import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.EmailConfirmation;
 import com.orion.anibelika.mapper.UserMapper;
 import com.orion.anibelika.repository.EmailConfirmationRepository;
+import com.orion.anibelika.repository.UserRepository;
 import com.orion.anibelika.service.MailSenderService;
 import com.orion.anibelika.service.RegistrationService;
 import com.orion.anibelika.service.UserService;
@@ -29,13 +30,15 @@ public class RegistrationServiceImpl implements RegistrationService {
     private String subject;
 
     private final UserService userService;
+    private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final MailSenderService mailSender;
     private final EmailConfirmationRepository confirmationRepository;
 
     public RegistrationServiceImpl(UserService userService, UserMapper userMapper, MailSenderService mailSender,
-                                   EmailConfirmationRepository confirmationRepository) {
+                                   EmailConfirmationRepository confirmationRepository, UserRepository userRepository) {
         this.userService = userService;
+        this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.mailSender = mailSender;
         this.confirmationRepository = confirmationRepository;
@@ -51,6 +54,12 @@ public class RegistrationServiceImpl implements RegistrationService {
     @Transactional
     public UserDTO registerUser(CustomUserInfoDTO dto) {
         return register(userMapper.map(dto));
+    }
+
+    @Override
+    public void resendEmailMessage(String email) {
+        AuthUser user = userRepository.findUserByEmail(email);
+        sendRegisterMessage(user, email);
     }
 
     private UserDTO register(NewUserDTO dto) {
