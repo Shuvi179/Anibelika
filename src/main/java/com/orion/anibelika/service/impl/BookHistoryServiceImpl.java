@@ -23,6 +23,10 @@ public class BookHistoryServiceImpl implements BookHistoryService {
 
     @Override
     public void updateUserHistory(AudioBook audioBook) {
+        if (!userHelper.isCurrentUserAuthenticated()) {
+            return;
+        }
+
         DataUser user = userHelper.getCurrentDataUser();
         BookHistoryEntity history = bookHistoryRepository.getByUserAndBook(user, audioBook);
         if (Objects.isNull(history)) {

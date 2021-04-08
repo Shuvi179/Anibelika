@@ -38,7 +38,7 @@ public class CustomLoginServiceImpl implements CustomLoginService {
             return buildNewUser(attributes, params);
         }
         if (!currentUser.isEnabled()) {
-            throw new CustomUserLoginException("User is enabled");
+            throw new CustomUserLoginException("User is not enabled");
         }
         customAuthenticationProvider.trust(currentUser);
         return null;
