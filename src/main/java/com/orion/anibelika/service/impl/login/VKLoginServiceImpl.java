@@ -12,6 +12,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.social.support.URIBuilder;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ import static com.orion.anibelika.service.impl.login.LoginClientId.VK;
 
 @Service
 public class VKLoginServiceImpl implements VKLoginService {
-    private static final String REDIRECT_URL = "http://localhost:8081/vk/redirect";
+    private static final String REDIRECT_URL = "http://anibelika:8081/vk/redirect";
     private static final String AUTHORIZE_URL = "https://oauth.vk.com/authorize";
     private static final String ACCESS_TOKEN_URL = "https://oauth.vk.com/access_token";
     private static final String PROFILE_URL = "https://api.vk.com/method/getProfiles";
@@ -77,7 +78,16 @@ public class VKLoginServiceImpl implements VKLoginService {
                 .queryParam("redirect_uri", REDIRECT_URL)
                 .queryParam("code", code)
                 .build();
-        sendGetRequest(uri);
+        HttpResponse response = sendGetRequest(uri);
+        if (Objects.isNull(response) || Objects.isNull(response.getEntity())) {
+            System.out.println("Response is null");
+            return;
+        }
+        try {
+            System.out.println(EntityUtils.toString(response.getEntity(), "UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
