@@ -72,7 +72,7 @@ public class VKLoginServiceImpl implements VKLoginService {
     @Override
     public void accessToken(String code) {
         URI uri = URIBuilder.fromUri(ACCESS_TOKEN_URL)
-                .queryParam("CLIENT_ID", clientId)
+                .queryParam("client_id", clientId)
                 .queryParam("client_secret", clientSecret)
                 .queryParam("v", API_VERSION)
                 .queryParam("redirect_uri", REDIRECT_URL)
