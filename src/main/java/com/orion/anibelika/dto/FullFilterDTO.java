@@ -4,10 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdatePasswordDTO {
-    private String oldPassword;
-    private String newPassword;
+public class FullFilterDTO {
+    List<String> genres;
+    List<String> authors;
 }

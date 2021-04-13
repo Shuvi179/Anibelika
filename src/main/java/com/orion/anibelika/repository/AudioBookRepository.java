@@ -33,4 +33,8 @@ public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
             "GROUP BY b.id " +
             "HAVING ( COUNT(b.id) >= ?2 )", nativeQuery = true)
     List<Long> filterBooksByGenre(List<Long> genreIds, Integer genreSize);
+
+    @Query(value = "select count(*) from data_user_favourite_books as fb where fb.data_user_id = ?1 and fb.favourite_books_id = ?2",
+            nativeQuery = true)
+    Long isBookFavouriteByUser(Long userId, Long bookId);
 }

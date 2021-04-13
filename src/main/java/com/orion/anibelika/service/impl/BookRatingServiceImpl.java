@@ -33,13 +33,19 @@ public class BookRatingServiceImpl implements BookRatingService {
     public RatingDTO voteForBook(Long bookId, Long rating) {
         DataUser user = userHelper.getCurrentDataUser();
         BookRating bookRating = validateRating(bookId);
-        BookRatingVote vote = bookRatingVoteRepository.findByUser(user);
+        BookRatingVote vote = bookRatingVoteRepository.findByUserAndBookRating(user, bookRating);
         return Objects.isNull(vote) ? addNewVote(user, rating, bookRating) : updateVote(vote, rating, bookRating);
     }
 
     @Override
     public RatingDTO getRating(Long bookId) {
         return getDto(validateRating(bookId));
+    }
+
+    @Override
+    public Long getUserVoteByBook(Long bookId) {
+        DataUser user = userHelper.getCurrentDataUser();
+        return bookRatingVoteRepository.findByBookAndUserId(bookId, user.getId());
     }
 
     @Override

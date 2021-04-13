@@ -9,5 +9,7 @@ public interface BookRatingService {
 
     RatingDTO getRating(Long bookId);
 
+    Long getUserVoteByBook(Long bookId);
+
     void createBookRating(AudioBook audioBook);
 }

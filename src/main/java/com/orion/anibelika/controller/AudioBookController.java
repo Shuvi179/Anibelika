@@ -1,10 +1,8 @@
 package com.orion.anibelika.controller;
 
-import com.orion.anibelika.dto.AudioBookFilterDTO;
-import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
-import com.orion.anibelika.dto.FullAudioBookInfoDTO;
-import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
+import com.orion.anibelika.dto.*;
 import com.orion.anibelika.service.AudioBookService;
+import com.orion.anibelika.service.GenreService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.Min;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @Validated
@@ -22,11 +21,14 @@ import java.io.IOException;
 public class AudioBookController {
 
     private final AudioBookService audioBookService;
+    private final GenreService genreService;
 
     private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 10;
 
-    public AudioBookController(AudioBookService audioBookService) {
+    public AudioBookController(AudioBookService audioBookService, GenreService genreService) {
         this.audioBookService = audioBookService;
+        this.genreService = genreService;
+
     }
 
     @GetMapping(value = "/{id}")
@@ -75,5 +77,17 @@ public class AudioBookController {
     @Operation(summary = "Update book image by id")
     public void addBookImage(@PathVariable @Min(1) Long id, @RequestParam("file") MultipartFile file) throws IOException {
         audioBookService.saveBookImage(id, file.getBytes());
+    }
+
+    @GetMapping("/genre")
+    @Operation(summary = "Get all genres")
+    public List<String> getAllGenres() {
+        return genreService.getAllGenresName();
+    }
+
+    @GetMapping("/filter")
+    @Operation(summary = "Get book filter info")
+    public ResponseEntity<FullFilterDTO> getFilter() {
+        return new ResponseEntity<>(audioBookService.getFilterDto(), HttpStatus.OK);
     }
 }

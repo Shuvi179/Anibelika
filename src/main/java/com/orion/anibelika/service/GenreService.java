@@ -8,6 +8,8 @@ import java.util.Set;
 public interface GenreService {
     List<Genre> getGenres();
 
+    List<String> getAllGenresName();
+
     Set<Genre> getAllByNames(List<String> names);
 
     List<Long> getIds(List<String> names);

@@ -32,4 +32,10 @@ public class BookRatingController {
     public ResponseEntity<RatingDTO> voteForBook(@PathVariable Long bookId, @PathVariable @Min(0) @Max(5) Long rating) {
         return new ResponseEntity<>(bookRatingService.voteForBook(bookId, rating), HttpStatus.OK);
     }
+
+    @GetMapping("/vote")
+    @Operation(summary = "Get rating vote for book")
+    public ResponseEntity<Long> getUserVoteByBook(@PathVariable Long bookId) {
+        return new ResponseEntity<>(bookRatingService.getUserVoteByBook(bookId), HttpStatus.OK);
+    }
 }
