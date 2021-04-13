@@ -48,6 +48,11 @@ public class GenreStorage implements GenreService {
         return genres;
     }
 
+    @Override
+    public List<String> getAllGenresName() {
+        return genres.stream().map(Genre::getNameRus).collect(Collectors.toList());
+    }
+
     private Genre getByName(String name) {
         return genres.stream()
                 .filter(genre -> (genre.getNameRus().equals(name) || genre.getNameEng().equals(name)))

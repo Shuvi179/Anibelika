@@ -1,9 +1,6 @@
 package com.orion.anibelika.service;
 
-import com.orion.anibelika.dto.AudioBookFilterDTO;
-import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
-import com.orion.anibelika.dto.FullAudioBookInfoDTO;
-import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
+import com.orion.anibelika.dto.*;
 import com.orion.anibelika.entity.AudioBook;
 
 public interface AudioBookService {
@@ -34,4 +31,6 @@ public interface AudioBookService {
     PaginationAudioBookInfoDTO getFavouriteBooksByPage(Long userId, Integer pageNumber, Integer numberOfElements);
 
     PaginationAudioBookInfoDTO getBooksHistoryByPage(Integer pageNumber, Integer numberOfElements);
+
+    FullFilterDTO getFilterDto();
 }

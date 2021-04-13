@@ -8,4 +8,5 @@ import lombok.Data;
 public class FullAudioBookInfoDTO {
     private DefaultAudioBookInfoDTO bookInfo;
     private RatingDTO rating;
+    private Boolean favouriteByCurrentUser;
 }

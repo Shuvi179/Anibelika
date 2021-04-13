@@ -1,9 +1,6 @@
 package com.orion.anibelika.service.impl;
 
-import com.orion.anibelika.dto.AudioBookFilterDTO;
-import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
-import com.orion.anibelika.dto.FullAudioBookInfoDTO;
-import com.orion.anibelika.dto.PaginationAudioBookInfoDTO;
+import com.orion.anibelika.dto.*;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.entity.Genre;
@@ -151,8 +148,8 @@ public class AudioBookServiceImpl implements AudioBookService {
         CriteriaQuery<AudioBook> query = cb.createQuery(AudioBook.class);
         Root<AudioBook> book = getFilterQueryRoot(query);
         List<Predicate> predicates = new ArrayList<>();
-        if (Objects.nonNull(filterDTO.getAuthorId())) {
-            predicates.add(cb.equal(book.get("user").get("id"), filterDTO.getAuthorId()));
+        if (Objects.nonNull(filterDTO.getAuthorNickName())) {
+            predicates.add(cb.equal(book.get("user").get("nickName"), filterDTO.getAuthorNickName()));
         }
         if (!CollectionUtils.isEmpty(filterDTO.getGenres())) {
             List<Long> genreIds = genreService.getIds(filterDTO.getGenres());
@@ -246,5 +243,10 @@ public class AudioBookServiceImpl implements AudioBookService {
         Pageable request = PageRequest.of(pageNumber - 1, numberOfElements);
         Page<AudioBook> lastViewedBooks = audioBookRepository.findAudioInHistory(user, request);
         return new PaginationAudioBookInfoDTO(mapper.mapAll(lastViewedBooks.getContent()), lastViewedBooks.getTotalPages(), lastViewedBooks.getTotalElements());
+    }
+
+    @Override
+    public FullFilterDTO getFilterDto() {
+        return new FullFilterDTO(genreService.getAllGenresName(), dataUserRepository.getAllAuthorsNickName());
     }
 }

@@ -1,6 +1,5 @@
 package com.orion.anibelika.dto;
 
-import com.orion.anibelika.validation.annotation.PasswordMatches;
 import com.orion.anibelika.validation.annotation.ValidEmail;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,7 +9,6 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
-@PasswordMatches
 public class RegisterUserDTO {
 
     @NotNull
@@ -25,5 +23,4 @@ public class RegisterUserDTO {
     @NotNull
     @NotEmpty
     private String password;
-    private String matchingPassword;
 }
