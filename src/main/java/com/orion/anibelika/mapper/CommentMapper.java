@@ -26,12 +26,14 @@ public class CommentMapper {
         comment.setUser(user);
         comment.setText(commentDTO.getText());
         comment.setCreateTime(new Date());
+        comment.setRating(commentDTO.getRating());
         return comment;
     }
 
     public CommentDTO map(Comment comment) {
         CommentDTO dto = new CommentDTO();
         dto.setId(comment.getId());
+        dto.setRating(comment.getRating());
         dto.setText(comment.getText());
         dto.setCreateTime(comment.getCreateTime());
         dto.setUserInfo(userMapper.map(comment.getUser()));

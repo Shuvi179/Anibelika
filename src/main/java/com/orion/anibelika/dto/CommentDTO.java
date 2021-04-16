@@ -9,6 +9,7 @@ import java.util.Date;
 @NoArgsConstructor
 public class CommentDTO {
     private Long id;
+    private Long rating;
     private String text;
     private Date createTime;
     private UserDTO userInfo;

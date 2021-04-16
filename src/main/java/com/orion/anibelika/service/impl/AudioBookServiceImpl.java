@@ -148,8 +148,8 @@ public class AudioBookServiceImpl implements AudioBookService {
         CriteriaQuery<AudioBook> query = cb.createQuery(AudioBook.class);
         Root<AudioBook> book = getFilterQueryRoot(query);
         List<Predicate> predicates = new ArrayList<>();
-        if (Objects.nonNull(filterDTO.getAuthorNickName())) {
-            predicates.add(cb.equal(book.get("user").get("nickName"), filterDTO.getAuthorNickName()));
+        if (!CollectionUtils.isEmpty(filterDTO.getAuthorsNickName())) {
+            predicates.add(book.get("user").get("nickName").in(filterDTO.getAuthorsNickName()));
         }
         if (!CollectionUtils.isEmpty(filterDTO.getGenres())) {
             List<Long> genreIds = genreService.getIds(filterDTO.getGenres());
