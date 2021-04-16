@@ -9,7 +9,7 @@ import java.util.List;
 @AllArgsConstructor
 public class AudioBookFilterDTO {
     private String bookName;
-    private String authorNickName;
+    private List<String> authorsNickName;
     private Long sortBy;
     private List<String> genres;
 }
