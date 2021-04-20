@@ -9,4 +9,5 @@ public class FullAudioBookInfoDTO {
     private DefaultAudioBookInfoDTO bookInfo;
     private RatingDTO rating;
     private Boolean favouriteByCurrentUser;
+    private Long selectedAsFavourite;
 }
