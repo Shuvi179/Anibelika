@@ -1,6 +1,7 @@
 package com.orion.anibelika.security;
 
 import com.orion.anibelika.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,7 +14,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final String servletPath = "/api/v1";
+    @Value("${anibelika.successful.oauth2.redirect.url}")
+    private String redirectUrl;
 
     private final CustomAuthenticationProvider customAuthenticationProvider;
     private final UserService userDetailsService;
@@ -43,6 +45,6 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(servletPath + "/book/*").authenticated()
                 .anyRequest().permitAll()
                 .and().formLogin().failureHandler(new CustomAuthenticationFailureHandler())
-                .and().oauth2Login().defaultSuccessUrl(servletPath + "/oauth2Login");
+                .and().oauth2Login().defaultSuccessUrl(redirectUrl);
     }
 }
