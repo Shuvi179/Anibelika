@@ -6,9 +6,7 @@ import com.orion.anibelika.dto.UpdatePasswordDTO;
 import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AuthUser;
 import com.orion.anibelika.entity.DataUser;
-import com.orion.anibelika.exception.PermissionException;
-import com.orion.anibelika.exception.RegistrationException;
-import com.orion.anibelika.exception.UserNotFoundException;
+import com.orion.anibelika.exception.*;
 import com.orion.anibelika.image.ImageService;
 import com.orion.anibelika.mapper.UserMapper;
 import com.orion.anibelika.repository.DataUserRepository;
@@ -115,13 +113,13 @@ public class UserServiceImpl implements UserService {
 
     private void validateEmail(String email) {
         if (userRepository.existsUserByEmail(email)) {
-            throw new IllegalArgumentException("Email is already in use: " + email);
+            throw new DuplicateEmailException("Email is already in use: " + email);
         }
     }
 
     private void validateNickName(String nickName) {
         if (dataUserRepository.existsDataUserByNickNameIgnoreCase(nickName)) {
-            throw new IllegalArgumentException("NickName is already in use: " + nickName);
+            throw new DuplicateNickNameException("NickName is already in use: " + nickName);
         }
     }
 
