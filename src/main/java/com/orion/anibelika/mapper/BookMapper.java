@@ -3,6 +3,7 @@ package com.orion.anibelika.mapper;
 import com.orion.anibelika.dto.DefaultAudioBookInfoDTO;
 import com.orion.anibelika.dto.FullAudioBookInfoDTO;
 import com.orion.anibelika.dto.RatingDTO;
+import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.AudioBook;
 import com.orion.anibelika.entity.DataUser;
 import com.orion.anibelika.repository.AudioBookRepository;
@@ -21,11 +22,13 @@ import java.util.stream.Collectors;
 public class BookMapper {
 
     private final UserHelper userHelper;
+    private final UserMapper userMapper;
     private final GenreService genreService;
     private final AudioBookRepository audioBookRepository;
 
-    public BookMapper(UserHelper userHelper, GenreService genreService, AudioBookRepository audioBookRepository) {
+    public BookMapper(UserHelper userHelper, UserMapper userMapper, GenreService genreService, AudioBookRepository audioBookRepository) {
         this.userHelper = userHelper;
+        this.userMapper = userMapper;
         this.genreService = genreService;
         this.audioBookRepository = audioBookRepository;
     }
@@ -59,7 +62,8 @@ public class BookMapper {
     private FullAudioBookInfoDTO getFullInfoDto(AudioBook audioBook, Predicate<AudioBook> createdByUser, Map<Long, Long> selectedAsFavourite) {
         DefaultAudioBookInfoDTO defaultInfo = getDefaultDto(audioBook, createdByUser);
         RatingDTO rating = new RatingDTO(audioBook.getBookRating().getRating(), audioBook.getBookRating().getNumberOfVotes());
-        return new FullAudioBookInfoDTO(defaultInfo, rating, false, selectedAsFavourite.getOrDefault(audioBook.getId(), 0L));
+        UserDTO author = userMapper.mapUnAuthorize(audioBook.getUser());
+        return new FullAudioBookInfoDTO(defaultInfo, rating, author, false, selectedAsFavourite.getOrDefault(audioBook.getId(), 0L));
     }
 
     private DefaultAudioBookInfoDTO getDefaultDto(AudioBook audioBook, Predicate<AudioBook> createdByUser) {

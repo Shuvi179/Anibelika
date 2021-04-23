@@ -21,6 +21,13 @@ public class UserMapper {
         return dto;
     }
 
+    public UserDTO mapUnAuthorize(DataUser user) {
+        UserDTO dto = new UserDTO();
+        dto.setId(user.getId());
+        dto.setNickName(user.getNickName());
+        return dto;
+    }
+
     public NewUserDTO map(CustomUserInfoDTO dto) {
         NewUserDTO userDTO = new NewUserDTO();
         userDTO.setEmail(dto.getEmail());
