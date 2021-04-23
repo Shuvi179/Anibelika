@@ -15,7 +15,7 @@ import java.nio.file.Paths;
 @EnableFilesystemStores
 public class AudioStorageConfig {
 
-    @Value("${anibelica.image.audio.url.root}")
+    @Value("${anibelica.audio.url.root}")
     private String audioPath;
 
     @Bean
