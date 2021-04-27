@@ -16,7 +16,7 @@ import javax.validation.constraints.Min;
 public class FavouriteBookController {
     private final AudioBookService audioBookService;
 
-    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 10;
+    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 12;
 
     public FavouriteBookController(AudioBookService audioBookService) {
         this.audioBookService = audioBookService;
@@ -34,9 +34,15 @@ public class FavouriteBookController {
         audioBookService.unMarkBookAsFavourite(bookId);
     }
 
-    @GetMapping("/user/{userId}/page/{pageId}")
+    @GetMapping("/page/{pageId}")
     @Operation(summary = "Get favourite books by page")
-    public ResponseEntity<PaginationAudioBookInfoDTO> getFavouriteBookPage(@PathVariable Long userId, @PathVariable @Min(1) Integer pageId) {
-        return new ResponseEntity<>(audioBookService.getFavouriteBooksByPage(userId, pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
+    public ResponseEntity<PaginationAudioBookInfoDTO> getFavouriteBookPage(@PathVariable @Min(1) Integer pageId) {
+        return new ResponseEntity<>(audioBookService.getFavouriteBooksByPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
+    }
+
+    @DeleteMapping
+    @Operation(summary = "Delete all favourite books for user")
+    public void removeAllFavouriteBooksByUser() {
+        audioBookService.removeAllFavouriteBooksByUser();
     }
 }
