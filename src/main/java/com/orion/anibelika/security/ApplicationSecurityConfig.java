@@ -50,6 +50,7 @@ public class ApplicationSecurityConfig extends WebSecurityConfigurerAdapter {
                 //.antMatchers(servletPath + "/book/*").authenticated()
                 .anyRequest().permitAll()
                 .and().formLogin().failureHandler(new CustomAuthenticationFailureHandler())
+                .successHandler(new CustomAuthenticationSuccessHandler())
                 .and().oauth2Login().defaultSuccessUrl(redirectUrl);
     }
 
