@@ -231,22 +231,45 @@ public class AudioBookServiceImpl implements AudioBookService {
     }
 
     @Override
-    public PaginationAudioBookInfoDTO getFavouriteBooksByPage(Long userId, Integer pageNumber, Integer numberOfElements) {
-        Pageable request = PageRequest.of(pageNumber - 1, numberOfElements);
-        Page<AudioBook> favouriteAudioBooks = audioBookRepository.findAllByUser(userId, request);
+    @Transactional
+    public void removeAllFavouriteBooksByUser() {
+        DataUser user = userHelper.getCurrentDataUser();
+        audioBookRepository.removeAllFavouriteBookByUserId(user.getId());
+    }
+
+    @Override
+    public PaginationAudioBookInfoDTO getFavouriteBooksByPage(Integer pageNumber, Integer numberOfElementsByPage) {
+        DataUser user = userHelper.getCurrentDataUser();
+        Pageable request = PageRequest.of(pageNumber - 1, numberOfElementsByPage);
+        Page<AudioBook> favouriteAudioBooks = audioBookRepository.findAllFavouriteByUser(user.getId(), request);
         return new PaginationAudioBookInfoDTO(mapper.mapAll(favouriteAudioBooks.getContent()), favouriteAudioBooks.getTotalPages(), favouriteAudioBooks.getTotalElements());
     }
 
     @Override
-    public PaginationAudioBookInfoDTO getBooksHistoryByPage(Integer pageNumber, Integer numberOfElements) {
+    public PaginationAudioBookInfoDTO getBooksHistoryByPage(Integer pageNumber, Integer numberOfElementsByPage) {
         DataUser user = userHelper.getCurrentDataUser();
-        Pageable request = PageRequest.of(pageNumber - 1, numberOfElements);
-        Page<AudioBook> lastViewedBooks = audioBookRepository.findAudioInHistory(user, request);
+        Pageable request = PageRequest.of(pageNumber - 1, numberOfElementsByPage);
+        Page<AudioBook> lastViewedBooks = audioBookRepository.findBookInHistory(user, request);
         return new PaginationAudioBookInfoDTO(mapper.mapAll(lastViewedBooks.getContent()), lastViewedBooks.getTotalPages(), lastViewedBooks.getTotalElements());
+    }
+
+    @Override
+    public PaginationAudioBookInfoDTO getMyBooksByPage(Integer pageNumber, Integer numberOfElementsByPage) {
+        DataUser user = userHelper.getCurrentDataUser();
+        Page<AudioBook> result = getAudioPageWithFilter(new AudioBookFilterDTO("", List.of(user.getNickName()),
+                1L, Collections.emptyList()), pageNumber, numberOfElementsByPage);
+        return new PaginationAudioBookInfoDTO(mapper.mapAll(result.getContent()), result.getTotalPages(), result.getTotalElements());
     }
 
     @Override
     public FullFilterDTO getFilterDto() {
         return new FullFilterDTO(genreService.getAllGenresName(), dataUserRepository.getAllAuthorsNickName());
+    }
+
+    @Override
+    public MyBookCountDTO getMyBookCountDto() {
+        DataUser user = userHelper.getCurrentDataUser();
+        return new MyBookCountDTO(audioBookRepository.getNumberOfFavouriteBooks(user.getId()),
+                audioBookRepository.getNumberOfCreatedBooks(user.getId()));
     }
 }

@@ -23,7 +23,7 @@ public class AudioBookController {
     private final AudioBookService audioBookService;
     private final GenreService genreService;
 
-    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 10;
+    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 12;
 
     public AudioBookController(AudioBookService audioBookService, GenreService genreService) {
         this.audioBookService = audioBookService;
@@ -47,6 +47,12 @@ public class AudioBookController {
     @Operation(summary = "Get page of last viewed books")
     public ResponseEntity<PaginationAudioBookInfoDTO> getLastViewedBooksForPage(@PathVariable @Min(1) Integer pageId) {
         return new ResponseEntity<>(audioBookService.getBooksHistoryByPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/current/page/{pageId}")
+    @Operation(summary = "Get page of books created by current user")
+    public ResponseEntity<PaginationAudioBookInfoDTO> getMyBooksByPage(@PathVariable @Min(1) Integer pageId) {
+        return new ResponseEntity<>(audioBookService.getMyBooksByPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
     }
 
     @PostMapping
@@ -89,5 +95,11 @@ public class AudioBookController {
     @Operation(summary = "Get book filter info")
     public ResponseEntity<FullFilterDTO> getFilter() {
         return new ResponseEntity<>(audioBookService.getFilterDto(), HttpStatus.OK);
+    }
+
+    @GetMapping("/my")
+    @Operation(summary = "Get favourite and created books count")
+    public ResponseEntity<MyBookCountDTO> getMyBookCountInfo() {
+        return new ResponseEntity<>(audioBookService.getMyBookCountDto(), HttpStatus.OK);
     }
 }
