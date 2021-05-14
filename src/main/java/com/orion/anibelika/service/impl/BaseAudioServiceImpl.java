@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparingLong;
+import static java.util.stream.Collectors.*;
 
 @Service
 public class BaseAudioServiceImpl implements BaseAudioService {
@@ -32,6 +34,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         BaseAudio baseAudio = new BaseAudio();
         baseAudio.setName(audioDTO.getName());
         baseAudio.setTomeNumber(audioDTO.getTomeNumber());
+        baseAudio.setChapterNumber(audioDTO.getChapterNumber());
         baseAudio.setBook(book);
         return baseAudioRepository.save(baseAudio).getId();
     }
@@ -42,6 +45,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         BaseAudio audio = baseAudioRepository.getOne(audioDTO.getId());
         audio.setName(audioDTO.getName());
         audio.setTomeNumber(audioDTO.getTomeNumber());
+        audio.setChapterNumber(audioDTO.getChapterNumber());
         return getDto(baseAudioRepository.save(audio));
     }
 
@@ -55,11 +59,14 @@ public class BaseAudioServiceImpl implements BaseAudioService {
     public BookAudioDTO getAudioByBook(Long bookId) {
         List<BaseAudio> audioList = baseAudioRepository.getAllByBookId(bookId);
         Map<Long, List<AudioDTO>> audioMap = audioList.stream()
-                .collect(Collectors.groupingBy(BaseAudio::getTomeNumber, Collectors.mapping(this::getDto, Collectors.toList())));
+                .collect(groupingBy(BaseAudio::getTomeNumber, mapping(this::getDto,
+                        collectingAndThen(toList(), dtoList -> dtoList.stream()
+                                .sorted(comparingLong(AudioDTO::getChapterNumber))
+                                .collect(toList())))));
         return new BookAudioDTO(audioMap);
     }
 
     private AudioDTO getDto(BaseAudio audio) {
-        return new AudioDTO(audio.getId(), audio.getName(), audio.getTomeNumber());
+        return new AudioDTO(audio.getId(), audio.getName(), audio.getTomeNumber(), audio.getChapterNumber());
     }
 }

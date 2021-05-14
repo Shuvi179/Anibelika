@@ -21,6 +21,7 @@ public class BaseAudio {
     private Long id;
     private String name;
     private Long tomeNumber;
+    private Long chapterNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
