@@ -36,21 +36,24 @@ public class BaseAudioServiceImpl implements BaseAudioService {
     @Override
     public Long addNewAudio(AudioDTO audioDTO, Long bookId) {
         AudioBook book = audioBookService.getPermittedBookEntityById(bookId);
-        return addNewAudio(audioDTO, book);
+        DataUser user = userHelper.getCurrentDataUser();
+        return addNewAudio(audioDTO, book, user);
     }
 
     @Override
     public List<Long> addNewAudioList(List<AudioDTO> audioDTOList, Long bookId) {
         AudioBook book = audioBookService.getPermittedBookEntityById(bookId);
-        return audioDTOList.stream().map(audioDTO -> addNewAudio(audioDTO, book)).collect(Collectors.toList());
+        DataUser user = userHelper.getCurrentDataUser();
+        return audioDTOList.stream().map(audioDTO -> addNewAudio(audioDTO, book, user)).collect(Collectors.toList());
     }
 
-    private Long addNewAudio(AudioDTO audioDTO, AudioBook book) {
+    private Long addNewAudio(AudioDTO audioDTO, AudioBook book, DataUser user) {
         book.setLastUpdate(new Date());
         BaseAudio baseAudio = new BaseAudio();
         baseAudio.setName(audioDTO.getName());
         baseAudio.setTomeNumber(audioDTO.getTomeNumber());
         baseAudio.setChapterNumber(audioDTO.getChapterNumber());
+        baseAudio.setUser(user);
         baseAudio.setBook(book);
         return baseAudioRepository.save(baseAudio).getId();
     }
