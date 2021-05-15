@@ -56,7 +56,7 @@ public class AudioController {
 
     @DeleteMapping("/list")
     @Operation(summary = "Delete audio list placeholder")
-    public void deleteAudio(@RequestBody List<Long> audioIds) {
+    public void deleteAudioList(@RequestBody List<Long> audioIds) {
         baseAudioService.removeAudioList(audioIds);
     }
 
