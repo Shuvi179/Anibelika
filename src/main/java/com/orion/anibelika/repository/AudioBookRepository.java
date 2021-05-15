@@ -25,9 +25,6 @@ public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
             countQuery = "select count(bhe.book) from BookHistoryEntity bhe where bhe.user = ?1")
     Page<AudioBook> findBookInHistory(DataUser user, Pageable pageable);
 
-    @Query(value = "select count(b) from AudioBook as b join b.user as u join b.audios as a where a.id = ?1 and u.id = ?2")
-    Integer countBookByUserAndAudio(Long audioId, Long userId);
-
     @Query(value = "SELECT b.id " +
             "FROM books b JOIN books_genres bg ON b.id = bg.audio_book_id " +
             "WHERE bg.genres_id IN ?1 " +

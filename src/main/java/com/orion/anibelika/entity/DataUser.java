@@ -34,6 +34,9 @@ public class DataUser {
     @OneToMany(mappedBy = "user")
     private Set<DonateRequisite> requisites;
 
+    @OneToMany(mappedBy = "book")
+    private Set<BaseAudio> audios;
+
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY, optional = false)
     @PrimaryKeyJoinColumn
     private AuthUser authUser;

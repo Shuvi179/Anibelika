@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
+import java.util.List;
 
 @RestController
 @Validated
@@ -29,10 +30,22 @@ public class AudioController {
         return new ResponseEntity<>(baseAudioService.addNewAudio(audioDTO, bookId), HttpStatus.OK);
     }
 
+    @PostMapping("/list")
+    @Operation(summary = "Add new audio list placeholder by book")
+    public ResponseEntity<List<Long>> addNewAudio(@RequestBody @Valid List<AudioDTO> audioDTOs, @PathVariable @Min(1) Long bookId) {
+        return new ResponseEntity<>(baseAudioService.addNewAudioList(audioDTOs, bookId), HttpStatus.OK);
+    }
+
     @PutMapping
     @Operation(summary = "Update audio placeholder")
     public ResponseEntity<AudioDTO> updateAudio(@RequestBody @Valid AudioDTO audioDTO) {
         return new ResponseEntity<>(baseAudioService.updateAudio(audioDTO), HttpStatus.OK);
+    }
+
+    @PutMapping("/list")
+    @Operation(summary = "Update audio list placeholder")
+    public ResponseEntity<List<AudioDTO>> updateAudio(@RequestBody @Valid List<AudioDTO> audioDTOs) {
+        return new ResponseEntity<>(baseAudioService.updateAudioList(audioDTOs), HttpStatus.OK);
     }
 
     @DeleteMapping("/{audioId}")

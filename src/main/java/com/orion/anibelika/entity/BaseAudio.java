@@ -27,6 +27,10 @@ public class BaseAudio {
     @JoinColumn(nullable = false)
     private AudioBook book;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private DataUser user;
+
     @ContentId
     private String contentId;
     @ContentLength

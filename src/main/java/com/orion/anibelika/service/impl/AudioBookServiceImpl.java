@@ -128,14 +128,6 @@ public class AudioBookServiceImpl implements AudioBookService {
     }
 
     @Override
-    public void validateAudioAccess(Long audioId) {
-        DataUser user = userHelper.getCurrentDataUser();
-        if (audioBookRepository.countBookByUserAndAudio(audioId, user.getId()) <= 0) {
-            throw new PermissionException("No access to this data");
-        }
-    }
-
-    @Override
     @Transactional
     public PaginationAudioBookInfoDTO getAudioBookPage(AudioBookFilterDTO dto, Integer pageNumber, Integer numberOfElementsByPage) {
         Page<AudioBook> result = getAudioPageWithFilter(dto, pageNumber, numberOfElementsByPage);
