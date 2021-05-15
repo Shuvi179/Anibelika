@@ -12,5 +12,5 @@ public interface BaseAudioRepository extends JpaRepository<BaseAudio, Long> {
     @Query("select count(a.id) from BaseAudio a where a.user.id = ?2 and a.id in ?1")
     Long validateListAudioIdsByUser(List<Long> audioIds, Long authorId);
 
-    Boolean existsByIdAndUserId(Long id, Long userId);
+    boolean existsByIdAndUserId(Long id, Long userId);
 }
