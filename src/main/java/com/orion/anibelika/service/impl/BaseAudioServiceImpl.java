@@ -63,7 +63,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
 
     @Override
     public List<AudioDTO> updateAudioList(List<AudioDTO> audioDTOList) {
-        validateAudioListAccess(audioDTOList);
+        validateAudioListAccess(audioDTOList.stream().map(AudioDTO::getId).collect(Collectors.toList()));
         return audioDTOList.stream().map(this::updateAudioPr).collect(toList());
     }
 
@@ -83,8 +83,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
         }
     }
 
-    public void validateAudioListAccess(List<AudioDTO> audioDTOList) {
-        List<Long> audioIds = audioDTOList.stream().map(AudioDTO::getId).collect(toList());
+    public void validateAudioListAccess(List<Long> audioIds) {
         DataUser user = userHelper.getCurrentDataUser();
         if (baseAudioRepository.validateListAudioIdsByUser(audioIds, user.getId()) != audioIds.size()) {
             throw new PermissionException("No access to base audio");
@@ -95,6 +94,12 @@ public class BaseAudioServiceImpl implements BaseAudioService {
     public void removeAudio(Long audioId) {
         validateAudioAccess(audioId);
         baseAudioRepository.deleteById(audioId);
+    }
+
+    @Override
+    public void removeAudioList(List<Long> audioIds) {
+        validateAudioListAccess(audioIds);
+        audioIds.forEach(baseAudioRepository::deleteById);
     }
 
     @Override

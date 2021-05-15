@@ -18,5 +18,7 @@ public interface BaseAudioService {
 
     void removeAudio(Long audioId);
 
+    void removeAudioList(List<Long> audioIds);
+
     BookAudioDTO getAudioByBook(Long bookId);
 }

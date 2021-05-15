@@ -32,7 +32,7 @@ public class AudioController {
 
     @PostMapping("/list")
     @Operation(summary = "Add new audio list placeholder by book")
-    public ResponseEntity<List<Long>> addNewAudio(@RequestBody @Valid List<AudioDTO> audioDTOs, @PathVariable @Min(1) Long bookId) {
+    public ResponseEntity<List<Long>> addNewAudioList(@RequestBody @Valid List<AudioDTO> audioDTOs, @PathVariable @Min(1) Long bookId) {
         return new ResponseEntity<>(baseAudioService.addNewAudioList(audioDTOs, bookId), HttpStatus.OK);
     }
 
@@ -44,7 +44,7 @@ public class AudioController {
 
     @PutMapping("/list")
     @Operation(summary = "Update audio list placeholder")
-    public ResponseEntity<List<AudioDTO>> updateAudio(@RequestBody @Valid List<AudioDTO> audioDTOs) {
+    public ResponseEntity<List<AudioDTO>> updateAudioList(@RequestBody @Valid List<AudioDTO> audioDTOs) {
         return new ResponseEntity<>(baseAudioService.updateAudioList(audioDTOs), HttpStatus.OK);
     }
 
@@ -52,6 +52,12 @@ public class AudioController {
     @Operation(summary = "Delete audio placeholder")
     public void deleteAudio(@PathVariable Long audioId) {
         baseAudioService.removeAudio(audioId);
+    }
+
+    @DeleteMapping("/list")
+    @Operation(summary = "Delete audio list placeholder")
+    public void deleteAudio(@RequestBody List<Long> audioIds) {
+        baseAudioService.removeAudioList(audioIds);
     }
 
     @GetMapping
