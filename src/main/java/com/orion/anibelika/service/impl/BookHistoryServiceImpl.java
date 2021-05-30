@@ -8,6 +8,7 @@ import com.orion.anibelika.service.BookHistoryService;
 import com.orion.anibelika.service.UserHelper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.Objects;
 
@@ -36,5 +37,19 @@ public class BookHistoryServiceImpl implements BookHistoryService {
         }
         history.setLastVisit(new Date());
         bookHistoryRepository.save(history);
+    }
+
+    @Override
+    @Transactional
+    public void removeUserHistory(Long bookId) {
+        DataUser user = userHelper.getCurrentDataUser();
+        bookHistoryRepository.removeByUserAndBookId(user, bookId);
+    }
+
+    @Override
+    @Transactional
+    public void removeAllByUser() {
+        DataUser user = userHelper.getCurrentDataUser();
+        bookHistoryRepository.removeAllByUser(user);
     }
 }

@@ -23,7 +23,7 @@ public class AudioBookController {
     private final AudioBookService audioBookService;
     private final GenreService genreService;
 
-    private static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 12;
+    public static final Integer DEFAULT_ELEMENTS_ON_PAGE_NUMBER = 12;
 
     public AudioBookController(AudioBookService audioBookService, GenreService genreService) {
         this.audioBookService = audioBookService;
@@ -41,12 +41,6 @@ public class AudioBookController {
     @Operation(summary = "Get page of books")
     public ResponseEntity<PaginationAudioBookInfoDTO> getAudioBookForPage(@RequestBody AudioBookFilterDTO filterDTO, @PathVariable @Min(1) Integer pageId) {
         return new ResponseEntity<>(audioBookService.getAudioBookPage(filterDTO, pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/history/page/{pageId}")
-    @Operation(summary = "Get page of last viewed books")
-    public ResponseEntity<PaginationAudioBookInfoDTO> getLastViewedBooksForPage(@PathVariable @Min(1) Integer pageId) {
-        return new ResponseEntity<>(audioBookService.getBooksHistoryByPage(pageId, DEFAULT_ELEMENTS_ON_PAGE_NUMBER), HttpStatus.OK);
     }
 
     @GetMapping(value = "/current/page/{pageId}")
