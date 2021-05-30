@@ -26,7 +26,7 @@ public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
     Page<AudioBook> findBookInHistory(DataUser user, Pageable pageable);
 
     @Query(value = "SELECT b.id " +
-            "FROM books b JOIN books_genres bg ON b.id = bg.audio_book_id " +
+            "FROM books b JOIN books_genres bg ON b.id = bg.books_id " +
             "WHERE bg.genres_id IN ?1 " +
             "GROUP BY b.id " +
             "HAVING ( COUNT(b.id) >= ?2 )", nativeQuery = true)
