@@ -82,6 +82,12 @@ public class UserController {
         userService.resetUserPassword(uuid, dto);
     }
 
+    @PutMapping(value = "/{userId}/email/{email}")
+    @Operation(summary = "update Email (Only for development)")
+    public void updateEmail(@PathVariable Long userId, @PathVariable String email) {
+        userService.updateEmail(userId, email);
+    }
+
     @PostMapping(value = "/resend/{email}")
     @Operation(summary = "Resend email message")
     public void resetUserPassword(@PathVariable String email) {

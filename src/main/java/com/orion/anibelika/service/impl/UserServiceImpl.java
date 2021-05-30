@@ -196,6 +196,14 @@ public class UserServiceImpl implements UserService {
         dataUserRepository.save(user);
     }
 
+    @Override
+    @Transactional
+    public void updateEmail(Long userId, String email) {
+        AuthUser user = userRepository.getOne(userId);
+        user.setEmail(email);
+        userRepository.save(user);
+    }
+
     private void updatePassword(AuthUser user, String password) {
         user.setPassword(passwordConfig.passwordEncoder().encode(password));
         userRepository.save(user);

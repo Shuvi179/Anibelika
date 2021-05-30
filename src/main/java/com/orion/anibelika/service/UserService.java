@@ -7,6 +7,8 @@ import com.orion.anibelika.dto.UserDTO;
 import com.orion.anibelika.entity.DataUser;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.transaction.Transactional;
+
 public interface UserService extends UserDetailsService {
     DataUser addUser(NewUserDTO newUserDTO);
 
@@ -29,4 +31,7 @@ public interface UserService extends UserDetailsService {
     void updateUserPassword(UpdatePasswordDTO dto);
 
     void updateUserNickName(String nickName);
+
+    @Transactional
+    void updateEmail(Long userId, String email);
 }
