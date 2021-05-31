@@ -11,9 +11,7 @@ import com.orion.anibelika.service.GenreService;
 import com.orion.anibelika.service.UserHelper;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -34,7 +32,7 @@ public class BookMapper {
     }
 
     public FullAudioBookInfoDTO map(AudioBook audioBook) {
-        FullAudioBookInfoDTO dto = getFullInfoDto(audioBook, getCreatedByCurrentUserFunction(), Map.of(audioBook.getId(), 0L));
+        FullAudioBookInfoDTO dto = getFullInfoDto(audioBook, getCreatedByCurrentUserFunction(), Set.of(audioBook.getId()), Map.of(audioBook.getId(), 0L));
         dto.setFavouriteByCurrentUser(isBookFavourite(audioBook.getId()));
         return dto;
     }
@@ -54,16 +52,17 @@ public class BookMapper {
         Predicate<AudioBook> isCreated = getCreatedByCurrentUserFunction();
         List<Long> ids = audioBooks.stream().map(AudioBook::getId).collect(Collectors.toList());
         Map<Long, Long> selectedAsFavourite = getSelectedAsFavouriteTimes(ids);
+        Set<Long> isFavouriteForCurrentUser = isFavouriteForCurrentUser(ids);
         return audioBooks.stream()
-                .map(book -> getFullInfoDto(book, isCreated, selectedAsFavourite))
+                .map(book -> getFullInfoDto(book, isCreated, isFavouriteForCurrentUser, selectedAsFavourite))
                 .collect(Collectors.toList());
     }
 
-    private FullAudioBookInfoDTO getFullInfoDto(AudioBook audioBook, Predicate<AudioBook> createdByUser, Map<Long, Long> selectedAsFavourite) {
+    private FullAudioBookInfoDTO getFullInfoDto(AudioBook audioBook, Predicate<AudioBook> createdByUser, Set<Long> isFavouriteForCurrentUser, Map<Long, Long> selectedAsFavourite) {
         DefaultAudioBookInfoDTO defaultInfo = getDefaultDto(audioBook, createdByUser);
         RatingDTO rating = new RatingDTO(audioBook.getBookRating().getRating(), audioBook.getBookRating().getNumberOfVotes());
         UserDTO author = userMapper.mapUnAuthorize(audioBook.getUser());
-        return new FullAudioBookInfoDTO(defaultInfo, rating, author, false, selectedAsFavourite.getOrDefault(audioBook.getId(), 0L));
+        return new FullAudioBookInfoDTO(defaultInfo, rating, author, isFavouriteForCurrentUser.contains(audioBook.getId()), selectedAsFavourite.getOrDefault(audioBook.getId(), 0L));
     }
 
     private DefaultAudioBookInfoDTO getDefaultDto(AudioBook audioBook, Predicate<AudioBook> createdByUser) {
@@ -98,6 +97,14 @@ public class BookMapper {
     private Map<Long, Long> getSelectedAsFavouriteTimes(List<Long> ids) {
         return audioBookRepository.getNumberOfUserSelectedAsFavourite(ids).stream()
                 .collect(Collectors.toMap(val -> (Long) val[0], val -> (Long) val[1]));
+    }
+
+    private Set<Long> isFavouriteForCurrentUser(List<Long> bookIds) {
+        if (!userHelper.isCurrentUserAuthenticated()) {
+            return Collections.emptySet();
+        }
+        DataUser user = userHelper.getCurrentDataUser();
+        return audioBookRepository.isFavourite(bookIds, user.getId());
     }
 
     private boolean isCreatedByCurrentUser(DataUser dataUser, AudioBook audioBook) {

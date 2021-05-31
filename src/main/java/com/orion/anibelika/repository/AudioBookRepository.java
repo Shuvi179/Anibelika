@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
     @Override
@@ -35,6 +36,9 @@ public interface AudioBookRepository extends JpaRepository<AudioBook, Long> {
     @Query(value = "select count(*) from data_user_favourite_books as fb where fb.data_user_id = ?1 and fb.favourite_books_id = ?2",
             nativeQuery = true)
     Long isBookFavouriteByUser(Long userId, Long bookId);
+
+    @Query(value = "select fb.favourite_books_id from data_user_favourite_books as fb where fb.data_user_id = ?2 and fb.favourite_books_id in ?1", nativeQuery = true)
+    Set<Long> isFavourite(List<Long> ids, Long userId);
 
     @Query(value = "select dufb.favourite_books_id, count(dufb.data_user_id) from data_user_favourite_books as dufb where dufb.favourite_books_id in ?1 group by dufb.favourite_books_id", nativeQuery = true)
     List<Long[]> getNumberOfUserSelectedAsFavourite(List<Long> ids);
