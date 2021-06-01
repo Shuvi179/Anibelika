@@ -37,7 +37,7 @@ public class CommentMapper {
         dto.setRating(comment.getRatingVote().getRating());
         dto.setText(comment.getText());
         dto.setCreateTime(comment.getCreateTime());
-        dto.setUserInfo(userMapper.map(comment.getUser()));
+        dto.setUserInfo(userMapper.mapUnAuthorize(comment.getUser()));
         return dto;
     }
 
