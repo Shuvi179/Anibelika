@@ -28,8 +28,9 @@ public class Comment {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createTime;
 
-    @Column
-    private Long rating;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private BookRatingVote ratingVote;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)

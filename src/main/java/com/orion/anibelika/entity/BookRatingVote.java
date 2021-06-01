@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -28,4 +29,7 @@ public class BookRatingVote {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private BookRating bookRating;
+
+    @OneToMany(mappedBy = "ratingVote")
+    private Set<Comment> comments;
 }

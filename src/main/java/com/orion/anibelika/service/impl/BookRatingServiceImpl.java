@@ -45,7 +45,7 @@ public class BookRatingServiceImpl implements BookRatingService {
     @Override
     public Long getUserVoteByBook(Long bookId) {
         DataUser user = userHelper.getCurrentDataUser();
-        return bookRatingVoteRepository.findByBookAndUserId(bookId, user.getId());
+        return bookRatingVoteRepository.findByBookAndUserId(bookId, user.getId()).getRating();
     }
 
     @Override

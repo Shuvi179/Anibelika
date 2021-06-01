@@ -3,6 +3,7 @@ package com.orion.anibelika.mapper;
 import com.orion.anibelika.dto.CommentDTO;
 import com.orion.anibelika.dto.NewCommentDTO;
 import com.orion.anibelika.entity.AudioBook;
+import com.orion.anibelika.entity.BookRatingVote;
 import com.orion.anibelika.entity.Comment;
 import com.orion.anibelika.entity.DataUser;
 import org.springframework.stereotype.Component;
@@ -20,20 +21,20 @@ public class CommentMapper {
         this.userMapper = userMapper;
     }
 
-    public Comment map(NewCommentDTO commentDTO, DataUser user, AudioBook book) {
+    public Comment map(NewCommentDTO commentDTO, DataUser user, AudioBook book, BookRatingVote vote) {
         Comment comment = new Comment();
         comment.setBook(book);
         comment.setUser(user);
         comment.setText(commentDTO.getText());
         comment.setCreateTime(new Date());
-        comment.setRating(commentDTO.getRating());
+        comment.setRatingVote(vote);
         return comment;
     }
 
     public CommentDTO map(Comment comment) {
         CommentDTO dto = new CommentDTO();
         dto.setId(comment.getId());
-        dto.setRating(comment.getRating());
+        dto.setRating(comment.getRatingVote().getRating());
         dto.setText(comment.getText());
         dto.setCreateTime(comment.getCreateTime());
         dto.setUserInfo(userMapper.map(comment.getUser()));
