@@ -81,7 +81,7 @@ public class BaseAudioServiceImpl implements BaseAudioService {
     @Override
     public void validateAudioAccess(Long audioId) {
         DataUser user = userHelper.getCurrentDataUser();
-        if (baseAudioRepository.existsByIdAndUserId(audioId, user.getId())) {
+        if (!baseAudioRepository.existsByIdAndUserId(audioId, user.getId())) {
             throw new PermissionException("No access to base audio");
         }
     }
