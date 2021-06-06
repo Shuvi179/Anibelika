@@ -74,7 +74,7 @@ public class AudioBookServiceImpl implements AudioBookService {
 
     @Override
     @Transactional
-    public void addAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
+    public Long addAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook book = validateAddBook(dto);
         AudioBook saved = audioBookRepository.save(book);
         if (!CollectionUtils.isEmpty(dto.getGenres())) {
@@ -82,6 +82,7 @@ public class AudioBookServiceImpl implements AudioBookService {
         }
         bookRatingService.createBookRating(saved);
         saveBookImage(saved.getId(), dto.getImage());
+        return book.getId();
     }
 
     private AudioBook addGenresToBook(AudioBook book, List<String> genres) {

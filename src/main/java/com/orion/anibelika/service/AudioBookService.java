@@ -10,7 +10,7 @@ public interface AudioBookService {
 
     AudioBook getBookEntityById(Long id);
 
-    void addAudioBook(DefaultAudioBookInfoDTO dto);
+    Long addAudioBook(DefaultAudioBookInfoDTO dto);
 
     void updateAudioBook(DefaultAudioBookInfoDTO dto);
 

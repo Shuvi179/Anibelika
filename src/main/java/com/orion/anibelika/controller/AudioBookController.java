@@ -51,8 +51,8 @@ public class AudioBookController {
 
     @PostMapping
     @Operation(summary = "Add new book")
-    public void addNewAudioBook(@RequestBody @Validated DefaultAudioBookInfoDTO dto) {
-        audioBookService.addAudioBook(dto);
+    public ResponseEntity<Long> addNewAudioBook(@RequestBody @Validated DefaultAudioBookInfoDTO dto) {
+        return ResponseEntity.ok(audioBookService.addAudioBook(dto));
     }
 
     @PutMapping
