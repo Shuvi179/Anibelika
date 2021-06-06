@@ -82,7 +82,7 @@ public class AudioBookServiceImpl implements AudioBookService {
         }
         bookRatingService.createBookRating(saved);
         saveBookImage(saved.getId(), dto.getImage());
-        return book.getId();
+        return saved.getId();
     }
 
     private AudioBook addGenresToBook(AudioBook book, List<String> genres) {
