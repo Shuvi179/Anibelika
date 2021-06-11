@@ -106,6 +106,7 @@ public class AudioBookServiceImpl implements AudioBookService {
     public void updateAudioBook(@NotNull DefaultAudioBookInfoDTO dto) {
         AudioBook newBook = mapper.map(dto);
         AudioBook saved = audioBookRepository.save(newBook);
+        saveBookImage(saved.getId(), dto.getImage());
         addGenresToBook(saved, dto.getGenres());
     }
 
