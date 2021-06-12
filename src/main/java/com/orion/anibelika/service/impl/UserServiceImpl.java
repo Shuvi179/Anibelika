@@ -93,6 +93,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO getCurrentUser() {
+        if (!userHelper.isCurrentUserAuthenticated()) {
+            return null;
+        }
         DataUser user = userHelper.getCurrentDataUser();
         return userMapper.map(user);
     }

@@ -20,6 +20,7 @@ public class BookRatingServiceImpl implements BookRatingService {
     private final UserHelper userHelper;
     private final BookRatingRepository bookRatingRepository;
     private final BookRatingVoteRepository bookRatingVoteRepository;
+    private static final Long DEFAULT_BOOK_RATING = 3L;
 
     public BookRatingServiceImpl(UserHelper userHelper, BookRatingRepository bookRatingRepository,
                                  BookRatingVoteRepository bookRatingVoteRepository) {
@@ -44,6 +45,9 @@ public class BookRatingServiceImpl implements BookRatingService {
 
     @Override
     public Long getUserVoteByBook(Long bookId) {
+        if (!userHelper.isCurrentUserAuthenticated()) {
+            return DEFAULT_BOOK_RATING;
+        }
         DataUser user = userHelper.getCurrentDataUser();
         return bookRatingVoteRepository.findByBookAndUserId(bookId, user.getId()).getRating();
     }
